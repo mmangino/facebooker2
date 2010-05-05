@@ -16,6 +16,35 @@ describe Facebooker2 do
       Facebooker2.app_id = "12345"
       Facebooker2.app_id.should == "12345"      
     end
+    
+    it "should allow setting the configuration in bulk" do
+      Facebooker2.configuration = {:app_id=>1234,:secret=>"secret"}
+      Facebooker2.app_id.should == 1234
+      Facebooker2.secret.should == "secret"
+      
+    end
+    
+    it "raises an exception if you access a nil app_id" do
+      Facebooker2.app_id = nil
+      lambda do 
+        Facebooker2.app_id
+      end.should raise_error(Facebooker2::NotConfigured)
+    end
+    
+    it "can load the configuration via facebooker.yml" do
+      ::Rails=mock("rails",:env=>"spec",:root=>File.dirname(__FILE__))
+      Facebooker2.load_facebooker_yaml
+      Facebooker2.app_id.should == "1234fromyaml"
+      Facebooker2.secret.should == "fromyaml"
+    end
+    
+    it "raises an error if there is no configuration for the env" do
+      ::Rails=mock("rails",:env=>"invalid",:root=>File.dirname(__FILE__))
+      lambda do
+        Facebooker2.load_facebooker_yaml
+      end.should raise_error(Facebooker2::NotConfigured)
+      
+    end
   end
   
   describe "Casting to facebook_id" do

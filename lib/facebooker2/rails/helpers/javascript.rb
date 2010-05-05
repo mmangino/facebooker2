@@ -6,7 +6,7 @@ module Facebooker2
           opts = Hash.new(true).merge!(options)
           cookie = opts[:cookie]
           status = opts[:status]
-          status = opts[:xfbml]
+          xfbml = opts[:xfbml]
           js = <<-JAVASCRIPT
           <div id="fb-root"></div>
           <script>

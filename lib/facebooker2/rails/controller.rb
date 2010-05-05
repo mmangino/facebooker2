@@ -4,6 +4,12 @@ module Facebooker2
   module Rails
     module Controller
       
+      def self.included(controller)
+        controller.helper Facebooker2::Rails::Helpers
+        controller.helper_method :current_facebook_user
+        controller.helper_method :current_facebook_client
+      end
+      
       def current_facebook_user
         fetch_client_and_user_from_cookie
         @_current_facebook_user
@@ -19,17 +25,24 @@ module Facebooker2
         app_id = Facebooker2.app_id
         if (hash_data = fb_cookie_hash_for_app_id(app_id)) and
           fb_cookie_signature_correct?(fb_cookie_hash_for_app_id(app_id),Facebooker2.secret)
-          @_current_facebook_client = Mogli::Client.new(hash_data["access_token"],hash_data["expires"].to_i)
-          @_current_facebook_user = Mogli::User.new(:id=>hash_data["uid"])
-          @_current_facebook_user.client = @_current_facebook_client
+          client = Mogli::Client.new(hash_data["access_token"],hash_data["expires"].to_i)
+          user = Mogli::User.new(:id=>hash_data["uid"])
+          user.client = @_current_facebook_client
+          fb_sign_in_user_and_client(user,client)
         end
+        @_fb_user_fetched = true
+      end
+      
+      def fb_sign_in_user_and_client(user,client)
+        @_current_facebook_user = user
+        @_current_facebook_client = client
         @_fb_user_fetched = true
       end
       
       def fb_cookie_hash_for_app_id(app_id)
         return nil unless fb_cookie_for_app_id?(app_id)
         hash={}
-        data = fb_cookie_for_app_id(app_id)
+        data = fb_cookie_for_app_id(app_id).gsub(/"/,"")
         data.split("&").each do |str|
           parts = str.split("=")
           hash[parts.first] = parts.last
