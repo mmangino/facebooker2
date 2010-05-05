@@ -1,4 +1,3 @@
-require "ruby-debug"
 module Facebooker2
   module Rails
     module Helpers

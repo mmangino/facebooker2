@@ -21,5 +21,6 @@ end
 
 require "facebooker2/rails/controller"
 require "facebooker2/rails/helpers/facebook_connect"
+require "facebooker2/rails/helpers/javascript"
 require "facebooker2/rails/helpers/user"
 require "facebooker2/rails/helpers"
