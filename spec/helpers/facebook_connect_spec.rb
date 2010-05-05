@@ -1,5 +1,4 @@
 require "spec_helper"
-require "ruby-debug"
 describe Facebooker2::Rails::Helpers::FacebookConnect, :type=>:helper do
   include Facebooker2::Rails::Helpers::FacebookConnect
   describe "fb_login_and_redirect" do

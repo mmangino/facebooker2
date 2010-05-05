@@ -1,0 +1,52 @@
+require "ruby-debug"
+module Facebooker2
+  module Rails
+    module Helpers
+      module User
+        # Render an fb:name tag for the given user
+        # This renders the name of the user specified.  You can use this tag as both subject and object of 
+        # a sentence.  <em> See </em> http://wiki.developers.facebook.com/index.php/Fb:name for full description.  
+        # Use this tag on FBML pages instead of retrieving the user's info and rendering the name explicitly.
+        #
+        def fb_name(user, options={})
+          options = fb_transform_keys(options,FB_NAME_OPTION_KEYS_TO_TRANSFORM)
+          fb_assert_valid_keys(options, FB_NAME_VALID_OPTION_KEYS)
+          options.merge!(:uid => Facebooker2.cast_to_facebook_id(user))
+          content_tag("fb:name",nil, fb_stringify_vals(options))
+        end
+
+        FB_NAME_OPTION_KEYS_TO_TRANSFORM = {:first_name_only => :firstnameonly, 
+                                            :last_name_only => :lastnameonly,
+                                            :show_network => :shownetwork,
+                                            :use_you => :useyou,
+                                            :if_cant_see => :ifcantsee,
+                                            :subject_id => :subjectid}
+        FB_NAME_VALID_OPTION_KEYS = [:firstnameonly, :linked, :lastnameonly, :possessive, :reflexive, 
+                                     :shownetwork, :useyou, :ifcantsee, :capitalize, :subjectid]
+         
+        def fb_stringify_vals(hash)
+         result={}
+         hash.each do |key,value|
+           result[key]=value.to_s
+         end
+         result
+       end
+       def fb_transform_keys(options,transformation_hash)
+         new_hash = {}
+         options.each do |key,value|
+           new_key = transformation_hash[key]||key
+           new_hash[new_key]=value
+         end
+         new_hash
+       end
+       FB_ALWAYS_VALID_OPTION_KEYS = [:class, :style]
+       
+       def fb_assert_valid_keys(options,*valid_keys)
+         unknown_keys = options.keys - [valid_keys + FB_ALWAYS_VALID_OPTION_KEYS].flatten
+         raise(ArgumentError, "Unknown key(s): #{unknown_keys.join(", ")}") unless unknown_keys.empty?
+       end    
+       
+      end
+    end
+  end
+end
