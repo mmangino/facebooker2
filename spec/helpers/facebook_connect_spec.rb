@@ -1,6 +1,6 @@
 require "spec_helper"
 describe Facebooker2::Rails::Helpers::FacebookConnect, :type=>:helper do
-  include Facebooker2::Rails::Helpers::FacebookConnect
+  include Facebooker2::Rails::Helpers
   describe "fb_login_and_redirect" do
     it "renders a login button" do
       fb_login_and_redirect("/").should == 

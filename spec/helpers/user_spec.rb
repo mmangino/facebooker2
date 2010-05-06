@@ -1,6 +1,6 @@
 require "spec_helper"
 describe Facebooker2::Rails::Helpers::User, :type=>:helper do
-  include Facebooker2::Rails::Helpers::User
+  include Facebooker2::Rails::Helpers
   describe "name" do
     it "has an fb_name tag" do
       fb_name("1").should == "<fb:name uid=\"1\"></fb:name>"
