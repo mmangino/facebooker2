@@ -18,4 +18,31 @@ describe Facebooker2::Rails::Helpers::RequestForms, :type=>:helper do
     end
     
   end
+  
+  describe "request form" do
+     it "includes the name, url, and a message" do
+       fb_request_form "Title","URL","message" do
+       end
+       @output_buffer.should == "<fb:request-form action=\"URL\" content=\"message\" invite=\"true\" method=\"post\" type=\"Title\"></fb:request-form>"
+       
+     end
+     
+     it "renders the yielded content" do
+       fb_request_form "Title","URL","message" do
+         "yielded"
+       end
+       @output_buffer.should =~ /yielded/
+     end
+     
+     it "allows you to override params" do
+       fb_request_form "Title","URL","message",:invite=>false do
+       end
+       @output_buffer.should =~ /invite="false"/
+       
+     end
+     
+     
+  end
+  
+  
 end
