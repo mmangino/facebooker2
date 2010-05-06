@@ -34,6 +34,7 @@ module Facebooker2
       end
       
       def fb_sign_in_user_and_client(user,client)
+        user.client = client
         @_current_facebook_user = user
         @_current_facebook_client = client
         @_fb_user_fetched = true

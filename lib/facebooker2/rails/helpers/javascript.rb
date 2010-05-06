@@ -2,7 +2,7 @@ module Facebooker2
   module Rails
     module Helpers
       module Javascript
-        def fb_connect_async_js(app_id,options={})
+        def fb_connect_async_js(app_id=Facebooker2.app_id,options={})
           opts = Hash.new(true).merge!(options)
           cookie = opts[:cookie]
           status = opts[:status]

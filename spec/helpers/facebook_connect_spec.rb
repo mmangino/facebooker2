@@ -11,6 +11,11 @@ describe Facebooker2::Rails::Helpers::FacebookConnect, :type=>:helper do
       fb_login_and_redirect("/",:text=>"my test").should == 
         "<fb:login-button onlogin=\"window.location.href = &quot;/&quot;;\">my test</fb:login-button>"      
     end
+    
+    it "allows you to specify the permissions" do
+      fb_login_and_redirect("/",:perms=>"email,offline_access").should == 
+        "<fb:login-button onlogin=\"window.location.href = &quot;/&quot;;\" perms=\"email,offline_access\"></fb:login-button>"      
+    end
   end
   
   describe "Logging out" do

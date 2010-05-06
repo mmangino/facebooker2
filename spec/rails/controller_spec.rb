@@ -42,6 +42,10 @@ describe Facebooker2::Rails::Controller do
       controller.current_facebook_user.id.should == "12451752"      
     end
     
+    it "sets the client for the user" do
+      controller.current_facebook_user.client.access_token.should == "114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA."
+    end
+    
     it "doesn't create a user if there is no app cookie" do
       Facebooker2.app_id="other_app"
       controller.current_facebook_user.should be_nil
@@ -87,7 +91,7 @@ describe Facebooker2::Rails::Controller do
       controller.fb_sign_in_user_and_client(Mogli::User.new,Mogli::Client.new)
     end
     it "has a current_facebook_user" do
-      user = mock("user")
+      user = mock("user",:client= => nil)
       controller.fb_sign_in_user_and_client(user,Mogli::Client.new)
       controller.current_facebook_user.should == user
     end
