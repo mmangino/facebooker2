@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = 'facebooker2'
-  s.version = '0.0.2'
+  s.version = '0.0.3'
   s.summary = "Facebook Connect integration library for ruby and rails"
   s.description = "Facebook Connect integration library for ruby and rails"
   s.files = Dir['lib/**/*.rb']
