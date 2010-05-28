@@ -26,6 +26,12 @@ module Facebooker2
           content_tag("fb:login-button",text,options.merge(:onlogin=>js))
         end
         
+        def fb_login(options = {},&proc)
+           js = capture(&proc)
+           text = options.delete(:text)
+           concat(content_tag("fb:login-button",text,options.merge(:onlogin=>js)))
+        end
+        
         #
         # Logs the user out of facebook and redirects to the given URL
         #  args are passed to the call to link_to_function
