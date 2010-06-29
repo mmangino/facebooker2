@@ -39,13 +39,13 @@ shared login partial.
    or 
    <%= "Hello #{fb_name(current_facebook_user, :useyou => false)}!" # link to facebook profile
     %>
+  <%= fb_logout_link("Logout of fb", request.url) %><br />
 <% else
    # you must explicitly request permissions for facebook user fields.
    # here we instruct facebook to ask the user for permission for our website
    # to access the user's facebook email and birthday
    %>
   <%= fb_login_and_redirect('<your URL here>', :perms => 'email,user_birthday') %>
-  <%= fb_logout_link("Logout of fb", request.url) %><br />
 <% end %>
 
 Copyright (c) 2010 Mike Mangino, released under the MIT license
