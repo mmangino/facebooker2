@@ -1,13 +1,47 @@
 Facebooker2
 ===========
 
-Introduction goes here.
+Provides rails helpers for interfacing with Facebook's OpenGraph Javascript
+API, http://developers.facebook.com/docs/reference/javascript/.
+
+Requires the mogli gem.
 
 
 Example
 =======
 
-Example goes here.
+0. Prerequisite: You need a facebook app.  Have your API Key, Application
+Secret, and Application ID handy.
 
+1. Install facebooker2 as a plugin in your rails app.
 
-Copyright (c) 2010 [name of plugin creator], released under the MIT license
+2. Create config/facebooker.yml with the appropriate environment.
+
+production:
+  app_id: <your application id>
+  secret: <your application secret>
+  api_key: <your application key>
+
+3. Create config/initializers/facebooker2.rb and place the following line in it
+
+Facebooker2.load_facebooker_yaml
+
+4. Update your rails applications to use the rails helpers.  This could be in a
+shared login partial.
+
+<%= fb_connect_async_js %>
+<% if current_facebook_user %>
+   <%= "Welcome #{current_facebook_user.first_name} #{current_facebook_user.last_name}!" %>
+   or 
+   <%= "Hello #{fb_name(current_facebook_user, :useyou => false)}!" # link to facebook profile
+    %>
+<% else
+   # you must explicitly request permissions for facebook user fields
+   # here we instruct facebook to ask the for permission for our website to
+   # access the user's email and birthday
+   %>
+  <%= fb_login_and_redirect('http://<your URL here>', :perms => 'email,user_birthday') %>
+  <%= fb_logout_link("Logout of fb", request.url) %><br />
+<% end %>
+
+Copyright (c) 2010 Mike Mangino, released under the MIT license
