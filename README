@@ -26,7 +26,11 @@ production:
 
 Facebooker2.load_facebooker_yaml
 
-4. Update your rails applications to use the rails helpers.  This could be in a
+4. Add the following line to your app/controllers/application_controller.rb
+
+include Facebooker2::Rails::Controller
+
+5. Update your rails applications to use the rails helpers.  This could be in a
 shared login partial.
 
 <%= fb_connect_async_js %>
