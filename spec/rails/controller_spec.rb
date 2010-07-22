@@ -12,6 +12,7 @@ describe Facebooker2::Rails::Controller do
   
   let :controller do
     controller = FakeController.new
+    controller.stub!(:params).and_return({})
     controller.stub!(:cookies).and_return("fbs_12345"=>"\"access_token=114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.&expires=0&secret=1e3375dcc4527e7ead0f82c095421690&session_key=57f0206b01ad48bf84ac86f1-12451752&sig=4337fcdee4cc68bb70ec495c0eebf89c&uid=12451752\"")
     controller
   end
@@ -57,6 +58,16 @@ describe Facebooker2::Rails::Controller do
       controller.current_facebook_client.access_token.should == "114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA."
     end
     
+    it "creates a client from params" do
+      controller.stub!(:cookies).and_return({})
+      controller.stub!(:facebook_params).and_return(
+        :oauth_token => "103188716396725|2.N0kBq5D0cbwjTGm9J4xRgA__.3600.1279814400-585612657|Txwy8S7sWBIJnyAXebEgSx6ntgY.",
+        :expires=>"1279814400",
+        :user_id => "585612657")
+      controller.current_facebook_client.access_token.should == "103188716396725|2.N0kBq5D0cbwjTGm9J4xRgA__.3600.1279814400-585612657|Txwy8S7sWBIJnyAXebEgSx6ntgY."
+      controller.current_facebook_user.id.should == "585612657"
+    end
+    
     it "verifies that the signature is correct" do
       controller.fb_cookie_signature_correct?({
         "access_token"      =>  "114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.",
@@ -83,6 +94,26 @@ describe Facebooker2::Rails::Controller do
     end
     
     
+  end
+  
+  describe "Signed Request handling" do
+    it "should correctly parse JSON that is poorly encoded" do
+      controller.fb_signed_request_json("eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEyNzk4MTQ0MDAsIm9hdXRoX3Rva2VuIjoiMTAzMTg4NzE2Mzk2NzI1fDIuTjBrQnE1RDBjYndqVEdtOUo0eFJnQV9fLjM2MDAuMTI3OTgxNDQwMC01ODU2MTI2NTd8VHh3eThTN3NXQklKbnlBWGViRWdTeDZudGdZLiIsInVzZXJfaWQiOiI1ODU2MTI2NTcifQ").
+        should == "{\"algorithm\":\"HMAC-SHA256\",\"expires\":1279814400,\"oauth_token\":\"103188716396725|2.N0kBq5D0cbwjTGm9J4xRgA__.3600.1279814400-585612657|Txwy8S7sWBIJnyAXebEgSx6ntgY.\",\"user_id\":\"585612657\"}"
+    end
+    
+    it "provides facebook_params if the sig is valid" do
+      Facebooker2.secret = "mysecretkey"
+      controller.stub!(:params).and_return(:signed_request=>"N1JJFILX63MufS1zpHZwN109VK1ggzEsD0N4pH-yPtc.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEyNzk4MjE2MDAsIm9hdXRoX3Rva2VuIjoiMTAzMTg4NzE2Mzk2NzI1fDIucnJRSktyRzFRYXpGYTFoa2Z6MWpMZ19fLjM2MDAuMTI3OTgyMTYwMC01MzI4Mjg4Njh8TWF4QVdxTWtVS3lKbEFwOVgwZldGWEF0M004LiIsInVzZXJfaWQiOiI1MzI4Mjg4NjgifQ")
+      controller.facebook_params[:user_id].should == "532828868"
+    end
+    
+    it "doesn't provide facebook params if the sig is invalid" do
+      Facebooker2.secret = "mysecretkey"
+      controller.stub!(:params).and_return(:signed_request=>"invalid.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEyNzk4MjE2MDAsIm9hdXRoX3Rva2VuIjoiMTAzMTg4NzE2Mzk2NzI1fDIucnJRSktyRzFRYXpGYTFoa2Z6MWpMZ19fLjM2MDAuMTI3OTgyMTYwMC01MzI4Mjg4Njh8TWF4QVdxTWtVS3lKbEFwOVgwZldGWEF0M004LiIsInVzZXJfaWQiOiI1MzI4Mjg4NjgifQ")
+      controller.facebook_params.should be_blank
+      
+    end
   end
   
   describe "Methods" do

@@ -1,4 +1,6 @@
 require "digest/md5"
+require "hmac-sha2"
+require "ruby-debug"
 module Facebooker2
   module Rails
     module Controller
@@ -10,28 +12,36 @@ module Facebooker2
       end
       
       def current_facebook_user
-        fetch_client_and_user_from_cookie
+        fetch_client_and_user
         @_current_facebook_user
       end
       
       def current_facebook_client
-        fetch_client_and_user_from_cookie
+        fetch_client_and_user
         @_current_facebook_client
       end
       
-      def fetch_client_and_user_from_cookie
+      def fetch_client_and_user
         return if @_fb_user_fetched
-        app_id = Facebooker2.app_id
-        if (hash_data = fb_cookie_hash_for_app_id(app_id)) and
-          fb_cookie_signature_correct?(fb_cookie_hash_for_app_id(app_id),Facebooker2.secret)
-          client = Mogli::Client.new(hash_data["access_token"],hash_data["expires"].to_i)
-          user = Mogli::User.new(:id=>hash_data["uid"])
-          user.client = @_current_facebook_client
-          fb_sign_in_user_and_client(user,client)
-        end
+        fetch_client_and_user_from_cookie
+        fetch_client_and_user_from_signed_request unless @_current_facebook_client
         @_fb_user_fetched = true
       end
       
+      def fetch_client_and_user_from_cookie
+        app_id = Facebooker2.app_id
+        if (hash_data = fb_cookie_hash_for_app_id(app_id)) and
+          fb_cookie_signature_correct?(fb_cookie_hash_for_app_id(app_id),Facebooker2.secret)
+          fb_create_user_and_client(hash_data["access_token"],hash_data["expires"],hash_data["uid"])
+        end
+      end
+      
+      def fb_create_user_and_client(token,expires,userid)
+        client = Mogli::Client.new(token,expires.to_i)
+        user = Mogli::User.new(:id=>userid)
+        fb_sign_in_user_and_client(user,client)        
+      end
+            
       def fb_sign_in_user_and_client(user,client)
         user.client = client
         @_current_facebook_user = user
@@ -66,6 +76,36 @@ module Facebooker2
         end
         test_string += secret
         Digest::MD5.hexdigest(test_string) == hash["sig"]
+      end
+      
+      def fb_signed_request_json(encoded)
+        chars_to_add = 4-(encoded.size % 4)
+        encoded += ("=" * chars_to_add)
+        Base64.decode64(encoded)
+      end
+      
+      def facebook_params
+        @facebook_param ||= fb_load_facebook_params
+      end
+
+      def fb_load_facebook_params
+        return {} if params[:signed_request].blank?
+        sig,encoded_json = params[:signed_request].split(".")
+        return {} unless fb_signed_request_sig_valid?(sig,encoded_json)
+        ActiveSupport::JSON.decode(fb_signed_request_json(encoded_json)).with_indifferent_access
+      end  
+      
+      def fb_signed_request_sig_valid?(sig,encoded) 
+        base64 = Base64.encode64(HMAC::SHA256.digest(Facebooker2.secret,encoded))
+        #now make the url changes that facebook makes
+        url_escaped_base64 = base64.gsub(/=*\n?$/,"").tr("+/","-_")
+        sig ==  url_escaped_base64
+      end
+      
+      def fetch_client_and_user_from_signed_request
+        if facebook_params[:oauth_token]
+          fb_create_user_and_client(facebook_params[:oauth_token],facebook_params[:expires],facebook_params[:user_id])
+        end
       end
     end
   end

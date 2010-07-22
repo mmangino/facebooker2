@@ -1,6 +1,5 @@
 # Facebooker2
 require "mogli"
-
 module Facebooker2
   class NotConfigured < Exception; end
   class << self

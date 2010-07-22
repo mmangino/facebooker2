@@ -21,7 +21,7 @@ module Facebooker2
             };
 
             (function() {
-              ar s = document.createElement('div'); 
+              var s = document.createElement('div'); 
               s.setAttribute('id','fb-root'); 
               document.documentElement.getElementsByTagName("HEAD")[0].appendChild(s);
               var e = document.createElement('script');
