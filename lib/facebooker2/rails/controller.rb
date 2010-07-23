@@ -9,6 +9,7 @@ module Facebooker2
         controller.helper Facebooker2::Rails::Helpers
         controller.helper_method :current_facebook_user
         controller.helper_method :current_facebook_client
+        controller.helper_method :facebook_params
       end
       
       def current_facebook_user
