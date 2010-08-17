@@ -23,7 +23,7 @@ module Facebooker2
             (function() {
               var s = document.createElement('div'); 
               s.setAttribute('id','fb-root'); 
-              document.documentElement.getElementsByTagName("HEAD")[0].appendChild(s);
+              document.documentElement.getElementsByTagName("body")[0].appendChild(s);
               var e = document.createElement('script');
               e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
               e.async = true;
