@@ -1,6 +1,5 @@
 require "digest/md5"
 require "hmac-sha2"
-require "ruby-debug"
 module Facebooker2
   module Rails
     module Controller
