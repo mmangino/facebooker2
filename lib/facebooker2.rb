@@ -25,7 +25,7 @@ module Facebooker2
   end
   
   def self.load_facebooker_yaml
-    config = YAML.load(File.read(File.join(::Rails.root,"config","facebooker.yml")))[::Rails.env]
+    config = YAML.load(ERB.new(File.read(File.join(::Rails.root,"config","facebooker.yml"))).result)[::Rails.env]
     raise NotConfigured.new("Unable to load configuration for #{::Rails.env} from facebooker.yml. Is it set up?") if config.nil?
     self.configuration = config.with_indifferent_access
   end
