@@ -10,7 +10,7 @@ module Facebooker2
         controller.helper_method :current_facebook_client
         controller.helper_method :facebook_params
       end
-      
+
       def current_facebook_user
         fetch_client_and_user
         @_current_facebook_user
@@ -29,9 +29,9 @@ module Facebooker2
       end
       
       def fetch_client_and_user_from_cookie
-        app_id = Facebooker2.app_id
+        app_id = facebook_app_id
         if (hash_data = fb_cookie_hash_for_app_id(app_id)) and
-          fb_cookie_signature_correct?(fb_cookie_hash_for_app_id(app_id),Facebooker2.secret)
+          fb_cookie_signature_correct?(fb_cookie_hash_for_app_id(app_id),facebook_secret)
           fb_create_user_and_client(hash_data["access_token"],hash_data["expires"],hash_data["uid"])
         end
       end
@@ -96,7 +96,7 @@ module Facebooker2
       end  
       
       def fb_signed_request_sig_valid?(sig,encoded) 
-        base64 = Base64.encode64(HMAC::SHA256.digest(Facebooker2.secret,encoded))
+        base64 = Base64.encode64(HMAC::SHA256.digest(facebook_secret,encoded))
         #now make the url changes that facebook makes
         url_escaped_base64 = base64.gsub(/=*\n?$/,"").tr("+/","-_")
         sig ==  url_escaped_base64
@@ -106,6 +106,15 @@ module Facebooker2
         if facebook_params[:oauth_token]
           fb_create_user_and_client(facebook_params[:oauth_token],facebook_params[:expires],facebook_params[:user_id])
         end
+      end
+
+      private
+      def facebook_app_id
+        Facebooker2.app_id
+      end
+
+      def facebook_secret
+        Facebooker2.secret
       end
     end
   end
