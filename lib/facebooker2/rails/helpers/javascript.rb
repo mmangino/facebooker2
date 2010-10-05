@@ -40,7 +40,8 @@ module Facebooker2
             }());
           </script>
         JAVASCRIPT
-        block_given? ? concat(js) : js
+        escaped_js = fb_html_safe(js)
+        block_given? ? concat(escaped_js) : escaped_js
         end
       end
     end
