@@ -23,13 +23,14 @@ module Facebooker2
 
           text = options.delete(:text)
           
-          content_tag("fb:login-button",text,options.merge(:onlogin=>js))
+          #rails 3 only escapes non-html_safe strings, so get the raw string instead of the SafeBuffer
+          content_tag("fb:login-button",text,options.merge(:onlogin=>js.to_str))
         end
         
         def fb_login(options = {},&proc)
            js = capture(&proc)
            text = options.delete(:text)
-           concat(content_tag("fb:login-button",text,options.merge(:onlogin=>js)))
+           concat(content_tag("fb:login-button",text,options.merge(:onlogin=>js.to_str)))
         end
         
         #
@@ -37,7 +38,7 @@ module Facebooker2
         #  args are passed to the call to link_to_function
         def fb_logout_link(text,url,*args)
           function= "FB.logout(function() {window.location.href = '#{url}';})"
-          link_to_function text, function, *args
+          link_to_function text, function.to_str, *args
         end
         
         def fb_server_fbml(style=nil,&proc)
