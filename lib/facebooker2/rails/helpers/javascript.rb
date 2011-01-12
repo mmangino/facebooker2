@@ -39,15 +39,16 @@ module Facebooker2
               s.appendChild(e);
             }());
           </script>
-        JAVASCRIPT
-        escaped_js = fb_html_safe(js)
-        if block_given? 
+          JAVASCRIPT
+          escaped_js = fb_html_safe(js)
+          if block_given? 
            concat(escaped_js)
            #return the empty string, since concat returns the buffer and we don't want double output
            # from klochner
            "" 
-        else
+          else
            escaped_js
+          end
         end
       end
     end
