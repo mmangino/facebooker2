@@ -9,6 +9,14 @@ spec = Gem::Specification.new do |s|
   s.author = "Mike Mangino"
   s.email = "mmangino@elevatedrails.com"
   s.homepage = "http://developers.facebook.com/docs/api"
+
   s.add_dependency('mogli', ">=0.0.12")
   s.add_dependency('ruby-hmac')
+
+  s.add_development_dependency('bundler', '~> 1.0.0')
+  s.add_development_dependency('rake', '~> 0.8.7')
+  s.add_development_dependency('rspec', '~> 1.3.1')
+  s.add_development_dependency('rspec-rails', '~> 1.3.1')
+  s.add_development_dependency('rails', '~> 2.3.10')
+  s.add_development_dependency('json', '~> 1.4.0')
 end
