@@ -32,7 +32,6 @@ module Facebooker2
         
         #write the authentication params to a new cookie
         if !@_current_facebook_client.nil? 
-          logger.debug "writing new cookie"
           #we may have generated the signature based on the params in @facebook_params, and the expiration here is different
           
           set_fb_cookie(@_current_facebook_client.access_token, @_current_facebook_client.expiration, @_current_facebook_user.id, sig)
@@ -102,7 +101,6 @@ module Facebooker2
         end
         test_string += secret
         sig = Digest::MD5.hexdigest(test_string)
-        logger.debug "generated sig: " + sig
         return sig
       end
       
