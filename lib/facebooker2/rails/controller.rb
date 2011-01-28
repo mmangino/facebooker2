@@ -90,11 +90,11 @@ module Facebooker2
       
       # check if the expected signature matches the one from facebook
       def fb_cookie_signature_correct?(hash,secret)
-        generateSignature(hash,secret) == hash["sig"]
+        generate_signature(hash,secret) == hash["sig"]
       end
       
       # compute the md5 sig based on access_token,expires,uid, and the app secret
-      def generateSignature(hash,secret)
+      def generate_signature(hash,secret)
         sorted_keys = hash.keys.reject {|k| k=="sig"}.sort
         test_string = ""
         sorted_keys.each do |key|
@@ -137,7 +137,7 @@ module Facebooker2
           if @_current_facebook_client
             #compute a signature so we can store it in the cookie
             sig_hash = Hash["uid"=>facebook_params[:user_id],"access_token"=>facebook_params[:oauth_token],"expires"=>facebook_params[:expires]]
-            return generateSignature(sig_hash, Facebooker2.secret)
+            return generate_signature(sig_hash, Facebooker2.secret)
           end
         end
       end
