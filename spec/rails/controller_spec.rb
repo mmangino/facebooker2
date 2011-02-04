@@ -60,6 +60,7 @@ describe Facebooker2::Rails::Controller do
     end
     
     it "creates a client from params" do
+      controller.stub!(:fb_cookie_hash).and_return({})
       controller.stub!(:cookies).and_return({})
       controller.stub!(:facebook_params).and_return(
         :oauth_token => "103188716396725|2.N0kBq5D0cbwjTGm9J4xRgA__.3600.1279814400-585612657|Txwy8S7sWBIJnyAXebEgSx6ntgY.",
@@ -120,15 +121,22 @@ describe Facebooker2::Rails::Controller do
       Facebooker2.secret = "mysecretkey"
       controller.fetch_client_and_user.should be_true
       controller.fb_cookie.should_not be_nil
-      sig = controller.generateSignature({"uid"=>controller.facebook_params[:user_id],
+      sig = controller.generate_signature({"uid"=>controller.facebook_params[:user_id],
                                           "access_token"=>controller.facebook_params[:oauth_token],
                                           "expires"=>controller.facebook_params[:expires]},
                                          Facebooker2.secret)
 
-      controller.fb_cookie[:value].should == "\"uid=532828868&"+
-                                             "access_token=103188716396725|2.rrQJKrG1QazFa1hkfz1jLg__.3600.1279821600-532828868|MaxAWqMkUKyJlAp9X0fWFXAt3M8.&"+
+      controller.fb_cookie[:value].should == "\"session_key=57f0206b01ad48bf84ac86f1-12451752&"+
                                              "expires=1279821600&"+
-                                             "sig=" + sig + "\""
+                                             "uid=532828868&"+
+                                             "sig=0d82b1bb944e5bf8e753a71ee72e9e23&"+
+                                             "secret=1e3375dcc4527e7ead0f82c095421690&"+
+                                             "access_token=103188716396725|2.rrQJKrG1QazFa1hkfz1jLg__.3600.1279821600-532828868|MaxAWqMkUKyJlAp9X0fWFXAt3M8.\""
+
+#      controller.fb_cookie[:value].should == "\"uid=532828868&"+
+#                                             "access_token=103188716396725|2.rrQJKrG1QazFa1hkfz1jLg__.3600.1279821600-532828868|MaxAWqMkUKyJlAp9X0fWFXAt3M8.&"+
+#                                             "expires=1279821600&"+
+#                                             "sig=" + sig + "\""
     end
     
   end

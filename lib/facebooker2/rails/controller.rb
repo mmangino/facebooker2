@@ -158,10 +158,14 @@ module Facebooker2
         expires = Time.now.utc - 3600 unless expires != nil
         
         if access_token
-          value = '"uid=' + uid + '&' +
-                  'access_token=' + access_token + '&' +
-                  'expires=' + expires.to_i.to_s + '&' +
-                  'sig=' + sig + '"'
+          data = fb_cookie_hash
+          data.merge!('access_token' => access_token, 'uid' => uid, 'sig' => sig, "expires" => expires.to_i.to_s)
+          value = '"'
+          data.each do |k,v|
+            value += "#{k.to_s}=#{v.to_s}&"
+          end
+          value.chop!
+          value+='"'
         end
   
         # if an existing cookie is not set, we dont need to delete it
