@@ -158,7 +158,7 @@ module Facebooker2
         expires = Time.now.utc - 3600 unless expires != nil
         
         if access_token
-          data = fb_cookie_hash
+          data = fb_cookie_hash || {}
           data.merge!('access_token' => access_token, 'uid' => uid, 'sig' => sig, "expires" => expires.to_i.to_s)
           value = '"'
           data.each do |k,v|
