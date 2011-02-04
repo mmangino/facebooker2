@@ -3,7 +3,7 @@ require 'rake/rdoctask'
 require 'spec/rake/spectask'
 
 desc 'Default: run unit tests.'
-task :default => :test
+task :default => :spec
 
 desc 'Test the facebooker2 plugin.'
 Spec::Rake::SpecTask.new('spec') do |t|
