@@ -133,10 +133,6 @@ describe Facebooker2::Rails::Controller do
                                              "secret=1e3375dcc4527e7ead0f82c095421690&"+
                                              "access_token=103188716396725|2.rrQJKrG1QazFa1hkfz1jLg__.3600.1279821600-532828868|MaxAWqMkUKyJlAp9X0fWFXAt3M8.\""
 
-#      controller.fb_cookie[:value].should == "\"uid=532828868&"+
-#                                             "access_token=103188716396725|2.rrQJKrG1QazFa1hkfz1jLg__.3600.1279821600-532828868|MaxAWqMkUKyJlAp9X0fWFXAt3M8.&"+
-#                                             "expires=1279821600&"+
-#                                             "sig=" + sig + "\""
     end
     
   end
