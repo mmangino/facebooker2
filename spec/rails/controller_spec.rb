@@ -120,10 +120,10 @@ describe Facebooker2::Rails::Controller do
       Facebooker2.secret = "mysecretkey"
       controller.fetch_client_and_user.should be_true
       controller.fb_cookie.should_not be_nil
-      sig = controller.generateSignature({"uid"=>controller.facebook_params[:user_id],
-                                          "access_token"=>controller.facebook_params[:oauth_token],
-                                          "expires"=>controller.facebook_params[:expires]},
-                                         Facebooker2.secret)
+      sig = controller.generate_signature({"uid"=>controller.facebook_params[:user_id],
+                                           "access_token"=>controller.facebook_params[:oauth_token],
+                                           "expires"=>controller.facebook_params[:expires]},
+                                           Facebooker2.secret)
 
       controller.fb_cookie[:value].should == "\"uid=532828868&"+
                                              "access_token=103188716396725|2.rrQJKrG1QazFa1hkfz1jLg__.3600.1279821600-532828868|MaxAWqMkUKyJlAp9X0fWFXAt3M8.&"+
