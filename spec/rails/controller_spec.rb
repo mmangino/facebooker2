@@ -25,16 +25,17 @@ describe Facebooker2::Rails::Controller do
   describe "Cookie handling" do
     
     it "knows if a cookie exists for this app" do
-      controller.fb_cookie_for_app_id?(12345).should be_true
+      controller.fb_cookie.should be_true
     end
     
     it "knows when there isn't a cookie" do
-      controller.fb_cookie_for_app_id?(432432).should be_false      
+      controller.stub!(:cookies).and_return("")
+      controller.fb_cookie?.should be_false      
     end
     
     it "gets the hash from the cookie" do
       controller.stub!(:cookies).and_return("fbs_12345"=>"param1=val1&param2=val2")
-      controller.fb_cookie_hash_for_app_id(12345).should == {"param1"=>"val1", "param2"=>"val2"}
+      controller.fb_cookie_hash.should == {"param1"=>"val1", "param2"=>"val2"}
     end
     
     it "creates a user from the cookie" do
@@ -111,9 +112,25 @@ describe Facebooker2::Rails::Controller do
     it "doesn't provide facebook params if the sig is invalid" do
       Facebooker2.secret = "mysecretkey"
       controller.stub!(:params).and_return(:signed_request=>"invalid.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEyNzk4MjE2MDAsIm9hdXRoX3Rva2VuIjoiMTAzMTg4NzE2Mzk2NzI1fDIucnJRSktyRzFRYXpGYTFoa2Z6MWpMZ19fLjM2MDAuMTI3OTgyMTYwMC01MzI4Mjg4Njh8TWF4QVdxTWtVS3lKbEFwOVgwZldGWEF0M004LiIsInVzZXJfaWQiOiI1MzI4Mjg4NjgifQ")
-      controller.facebook_params.should be_blank
-      
+      controller.facebook_params.should be_blank      
     end
+    
+    it "writes a cookie to the client if the sig is valid" do
+      controller.stub!(:params).and_return(:signed_request=>"N1JJFILX63MufS1zpHZwN109VK1ggzEsD0N4pH-yPtc.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEyNzk4MjE2MDAsIm9hdXRoX3Rva2VuIjoiMTAzMTg4NzE2Mzk2NzI1fDIucnJRSktyRzFRYXpGYTFoa2Z6MWpMZ19fLjM2MDAuMTI3OTgyMTYwMC01MzI4Mjg4Njh8TWF4QVdxTWtVS3lKbEFwOVgwZldGWEF0M004LiIsInVzZXJfaWQiOiI1MzI4Mjg4NjgifQ")
+      Facebooker2.secret = "mysecretkey"
+      controller.fetch_client_and_user.should be_true
+      controller.fb_cookie.should_not be_nil
+      sig = controller.generateSignature({"uid"=>controller.facebook_params[:user_id],
+                                          "access_token"=>controller.facebook_params[:oauth_token],
+                                          "expires"=>controller.facebook_params[:expires]},
+                                         Facebooker2.secret)
+
+      controller.fb_cookie[:value].should == "\"uid=532828868&"+
+                                             "access_token=103188716396725|2.rrQJKrG1QazFa1hkfz1jLg__.3600.1279821600-532828868|MaxAWqMkUKyJlAp9X0fWFXAt3M8.&"+
+                                             "expires=1279821600&"+
+                                             "sig=" + sig + "\""
+    end
+    
   end
   
   describe "Methods" do
