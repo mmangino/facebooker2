@@ -172,9 +172,6 @@ module Facebooker2
         if (value == 'deleted' && cookies[fb_cookie_name] == "" ) 
           return;
         end
-    
-        # in php they have to check if headers have already been sent before setting the cookie
-        # maybe rails we don't have this problem?
         
         #My browser doesn't seem to save the cookie if I set expires
         cookies[fb_cookie_name] = { :value=>value }#, :expires=>expires}
