@@ -25,7 +25,7 @@ module Facebooker2
                 appId  : '#{app_id}',
                 status : #{status}, // check login status
                 cookie : #{cookie}, // enable cookies to allow the server to access the session
-                <% unless channel_url.blank? %>channelUrl : '#{channel_url}', // add channelURL to avoid IE redirect problems
+                #{"channelUrl : '#{channel_url}', // add channelURL to avoid IE redirect problems" unless channel_url.blank?}
                 xfbml  : #{xfbml}  // parse XFBML
               });
               #{extra_js}
