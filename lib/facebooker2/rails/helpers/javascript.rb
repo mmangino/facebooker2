@@ -16,6 +16,7 @@ module Facebooker2
           cookie = opts[:cookie]
           status = opts[:status]
           xfbml = opts[:xfbml]
+          channel_url = opts[:channel_url]
           extra_js = capture(&proc) if block_given?
           js = <<-JAVASCRIPT
           <script>
@@ -24,6 +25,7 @@ module Facebooker2
                 appId  : '#{app_id}',
                 status : #{status}, // check login status
                 cookie : #{cookie}, // enable cookies to allow the server to access the session
+                <% unless channel_url.blank? %>channelUrl : '#{channel_url}', // add channelURL to avoid IE redirect problems
                 xfbml  : #{xfbml}  // parse XFBML
               });
               #{extra_js}
