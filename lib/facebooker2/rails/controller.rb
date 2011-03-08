@@ -159,7 +159,11 @@ module Facebooker2
         
         if access_token
           data = fb_cookie_hash || {}
-          data.merge!('access_token' => access_token, 'uid' => uid, 'sig' => sig, "expires" => expires.to_i.to_s)
+          data.merge!('access_token' => access_token, 'uid' => uid, 'sig' => sig)
+          # We only set the expires from the passed in value if it isn't already set in the cookie
+          # as the facebook JS library sets expires to 0 if we have the offline_access permission set, whereas
+          # the graph api returns some value far in the future, this difference can cause request signing problems
+          data["expires"] = expires.to_i.to_s unless data.key?("expires")
           value = '"'
           data.each do |k,v|
             value += "#{k.to_s}=#{v.to_s}&"
