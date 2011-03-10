@@ -27,6 +27,7 @@ production:
 Facebooker2.load_facebooker_yaml
 
 4. Add the following line to your app/controllers/application_controller.rb
+   (add it right after the line "class ApplicationController < ActionController::Base" so as to add the Facebooker2 instance methods to the Application controller)
 
 include Facebooker2::Rails::Controller
 
