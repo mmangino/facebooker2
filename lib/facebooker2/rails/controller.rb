@@ -156,14 +156,22 @@ module Facebooker2
         #default values for the cookie
         value = 'deleted'
         expires = Time.now.utc - 3600 unless expires != nil
+
+        # If the expires value is set to some large value in the future, then the 'offline access' permission has been
+        # granted.  In the Facebook JS SDK, this causes a value of 0 to be set for the expires parameter.  This value 
+        # needs to be correct otherwise the request signing fails, so if the expires parameter retrieved from the graph
+        # api is more than a year in the future, then we set expires to 0 to match the JS SDK.
+        expires = 0 if expires > Time.now + 1.year
         
         if access_token
+          # Retrieve the existing cookie data
           data = fb_cookie_hash || {}
-          data.merge!('access_token' => access_token, 'uid' => uid, 'sig' => sig)
-          # We only set the expires from the passed in value if it isn't already set in the cookie
-          # as the facebook JS library sets expires to 0 if we have the offline_access permission set, whereas
-          # the graph api returns some value far in the future, this difference can cause request signing problems
-          data["expires"] = expires.to_i.to_s unless data.key?("expires")
+          # Remove the deleted value if this has previously been set, as we don't want to include it as part of the 
+          # request signing parameters
+          data.delete('deleted') if data.key?('deleted')
+          # Keep existing cookie data that could have been set by FB JS SDK
+          data.merge!('access_token' => access_token, 'uid' => uid, 'sig' => sig, 'expires' => expires.to_i.to_s)
+          # Create string to store in cookie
           value = '"'
           data.each do |k,v|
             value += "#{k.to_s}=#{v.to_s}&"
@@ -173,7 +181,7 @@ module Facebooker2
         end
   
         # if an existing cookie is not set, we dont need to delete it
-        if (value == 'deleted' && cookies[fb_cookie_name] == "" ) 
+        if (value == 'deleted' && (!fb_cookie? || fb_cookie == "" ))
           return;
         end
         

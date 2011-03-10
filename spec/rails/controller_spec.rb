@@ -95,7 +95,39 @@ describe Facebooker2::Rails::Controller do
       
     end
     
-    
+    it "does not set a cookie if it is not required" do
+      controller.stub!(:cookies).and_return("")
+      controller.set_fb_cookie(nil,
+                              Time.now,
+                              "5436785463785",
+                              "4337fcdee4cc68bb70ec495c0eebf89c").should be_nil
+      controller.fb_cookie.should be_nil
+    end
+
+    it "sets a valid cookie if the access token is not nil" do
+      tn = Time.now
+      controller.set_fb_cookie("114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.",
+                               tn,
+                               "5436785463785",
+                               "4337fcdee4cc68bb70ec495c0eebf89c").should be_true
+     controller.fb_cookie[:value].should == "\"session_key=57f0206b01ad48bf84ac86f1-12451752&expires=#{tn.to_i}&uid=5436785463785&sig=4337fcdee4cc68bb70ec495c0eebf89c&secret=1e3375dcc4527e7ead0f82c095421690&access_token=114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.\""
+    end
+
+    it "sets a cookie with an expires value of 0 if the access token expires value is far in the future" do
+      controller.set_fb_cookie("114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.",
+                               Time.now+2.year,
+                               "5436785463785",
+                               "4337fcdee4cc68bb70ec495c0eebf89c").should be_true
+     controller.fb_cookie[:value].should == "\"session_key=57f0206b01ad48bf84ac86f1-12451752&expires=0&uid=5436785463785&sig=4337fcdee4cc68bb70ec495c0eebf89c&secret=1e3375dcc4527e7ead0f82c095421690&access_token=114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.\""
+    end
+
+   it "sets a cookie with the value deleted if the access token is nil" do
+     controller.set_fb_cookie(nil,
+                              Time.now,
+                              "5436785463785",
+                              "4337fcdee4cc68bb70ec495c0eebf89c").should be_true
+     controller.fb_cookie[:value].should == "deleted"
+   end
   end
   
   describe "Signed Request handling" do
