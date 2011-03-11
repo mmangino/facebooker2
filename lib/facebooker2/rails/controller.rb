@@ -20,6 +20,10 @@ module Facebooker2
         fetch_client_and_user
         @_current_facebook_client
       end
+  
+      def logged_in?
+        !!current_facebook_user
+      end
       
       # This mimics the getSession logic from the php facebook SDK
       # https://github.com/facebook/php-sdk/blob/master/src/facebook.php#L333
