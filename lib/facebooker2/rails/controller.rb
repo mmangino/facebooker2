@@ -116,6 +116,7 @@ module Facebooker2
 
       def fb_load_facebook_params
         return {} if params[:signed_request].blank?
+        cookies.delete fb_cookie_name # if the signed_request params is present, we remove the cookie
         sig,encoded_json = params[:signed_request].split(".")
         return {} unless fb_signed_request_sig_valid?(sig,encoded_json)
         ActiveSupport::JSON.decode(fb_signed_request_json(encoded_json)).with_indifferent_access
