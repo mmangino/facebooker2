@@ -28,7 +28,7 @@ module Facebooker2
         return if @_fb_user_fetched
         # Try to authenticate from the signed request first
         sig = fetch_client_and_user_from_signed_request
-        sig = fetch_client_and_user_from_cookie unless @_current_facebook_client
+        sig = fetch_client_and_user_from_cookie if @_current_facebook_client.nil? and !signed_request_from_logged_out_user?
         
         #write the authentication params to a new cookie
         if !@_current_facebook_client.nil? 
@@ -90,6 +90,12 @@ module Facebooker2
       # check if the expected signature matches the one from facebook
       def fb_cookie_signature_correct?(hash,secret)
         generate_signature(hash,secret) == hash["sig"]
+      end
+      
+      # If the signed request is valid but contains no oauth token,
+      # the user is either logged out from Facebook or has not authorized the app
+      def signed_request_from_logged_out_user?
+        !facebook_params.empty? && facebook_params[:oauth_token].nil?
       end
       
       # compute the md5 sig based on access_token,expires,uid, and the app secret

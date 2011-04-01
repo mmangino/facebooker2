@@ -167,6 +167,18 @@ describe Facebooker2::Rails::Controller do
 
     end
     
+    it "uses the cookie if no signed_request is provided" do
+      controller.fetch_client_and_user.should be_true
+      controller.current_facebook_user.id.should == "12451752"
+    end
+    
+    it "deletes the cookie if the signed_request does not contain a oauth token (logged out or unauthorized user)" do
+      controller.stub!(:facebook_params).and_return({"algorithm"=>"HMAC-SHA256", "issued_at"=>1300976861, "user"=>{"country"=>"ca", "locale"=>"fr_CA", "age"=>{"min"=>21}}})
+      controller.fetch_client_and_user.should be_true
+      controller.fb_cookie[:value].should == "deleted"
+      controller.current_facebook_user.should be_nil
+    end
+    
   end
   
   describe "Methods" do
