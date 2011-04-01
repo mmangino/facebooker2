@@ -13,9 +13,9 @@ module Facebooker2
         
         def fb_connect_async_js(app_id=Facebooker2.app_id,options={},&proc)
           opts = Hash.new.merge!(options)
-          cookie = opts[:cookie] || true
-          status = opts[:status] || true
-          xfbml = opts[:xfbml] || true
+          cookie = opts[:cookie].nil? ? true : opts[:cookie]
+          status = opts[:status].nil? ? true : opts[:status]
+          xfbml = opts[:xfbml].nil?   ? true : opts[:xfbml]
           channel_url = opts[:channel_url]
           lang = opts[:locale] || 'en_US'
           extra_js = capture(&proc) if block_given?
