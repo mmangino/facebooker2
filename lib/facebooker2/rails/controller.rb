@@ -194,13 +194,14 @@ module Facebooker2
         #My browser doesn't seem to save the cookie if I set expires
         cookies[fb_cookie_name] = { :value=>value }#, :expires=>expires}
       end
-    end
+      
     
-    # For canvas apps, You need to set the p3p header in order to get IE 6/7 to accept the third-party cookie
-    # For details http://www.softwareprojects.com/resources/programming/t-how-to-get-internet-explorer-to-use-cookies-inside-1612.html
-    def set_p3p_header_for_third_party_cookies
-      response.headers['P3P'] = 'CP="IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT"'
+      # For canvas apps, You need to set the p3p header in order to get IE 6/7 to accept the third-party cookie
+      # For details http://www.softwareprojects.com/resources/programming/t-how-to-get-internet-explorer-to-use-cookies-inside-1612.html
+      def set_p3p_header_for_third_party_cookies
+        response.headers['P3P'] = 'CP="IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT"'
+      end
+      
     end
-    
   end
 end
