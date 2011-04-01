@@ -60,6 +60,13 @@ If you are using Rails 3, put this line of code inside your `config.ru` file :
 
     use Rack::PostCanvas
 
+Also, if you plan on supporting IE 6/7 and use cookie authentication, you should add a P3P header to your response in order for IE to accept the cookie :
+
+    before_filter :set_p3p_header_for_third_party_cookies
+    
+See [this blog post](http://www.softwareprojects.com/resources/programming/t-how-to-get-internet-explorer-to-use-cookies-inside-1612.html)
+and [this forum thread](http://forum.developers.facebook.net/viewtopic.php?id=452) for details.
+
 Contributing
 ------------
 
