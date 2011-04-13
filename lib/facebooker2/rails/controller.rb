@@ -206,6 +206,11 @@ module Facebooker2
         response.headers['P3P'] = 'CP="IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT"'
       end
       
+      def delete_fb_cookie!
+        site_domain = fb_cookie_hash["base_domain"] if fb_cookie_hash.has_key?("base_domain")
+        site_domain ? cookies.delete(fb_cookie_name, :domain => ".#{site_domain}") : cookies.delete(fb_cookie_name)
+      end
+
     end
   end
 end
