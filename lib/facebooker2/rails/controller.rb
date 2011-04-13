@@ -172,6 +172,8 @@ module Facebooker2
         if access_token
           # Retrieve the existing cookie data
           data = fb_cookie_hash || {}
+          # Retrieve the site domain when facebook application configured for working with subdomains
+          site_domain = data["base_domain"] if data.has_key?("base_domain")
           # Remove the deleted value if this has previously been set, as we don't want to include it as part of the 
           # request signing parameters
           data.delete('deleted') if data.key?('deleted')
@@ -191,8 +193,10 @@ module Facebooker2
           return;
         end
         
-        #My browser doesn't seem to save the cookie if I set expires
-        cookies[fb_cookie_name] = { :value=>value, :domain => ".lvh.me" }#, :expires=>expires}
+        #My browser doesn't seem to save the cookie if I set expires.
+        # Specifying the site domain prevents from having issues when working with subdomains
+        # such as cookie kept on subdomains when logged out from top domain.
+        cookies[fb_cookie_name] = site_domain ? { :value=>value, :domain=>".#{site_domain}" } : { :value=>value }#, :expires=>expires}
       end
       
     
