@@ -192,7 +192,7 @@ module Facebooker2
         end
         
         #My browser doesn't seem to save the cookie if I set expires
-        cookies[fb_cookie_name] = { :value=>value }#, :expires=>expires}
+        cookies[fb_cookie_name] = { :value=>value, :domain => ".lvh.me" }#, :expires=>expires}
       end
       
     
