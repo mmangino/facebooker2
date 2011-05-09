@@ -4,7 +4,7 @@ Facebooker2
 Provides rails helpers for interfacing with [Facebook's OpenGraph Javascript
 API](http://developers.facebook.com/docs/reference/javascript/).
 
-Requires the mogli gem.
+Requires the mogli and hmac-sha2 gems.
 
 
 Example
