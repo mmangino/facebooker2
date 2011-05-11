@@ -12,13 +12,15 @@ module Facebooker2
         end
         
         def fb_connect_async_js(app_id=Facebooker2.app_id,options={},&proc)
-          opts = Hash.new(true).merge!(options)
-          cookie = opts[:cookie]
-          status = opts[:status]
-          xfbml = opts[:xfbml]
+          opts = Hash.new.merge!(options)
+          cookie = opts[:cookie].nil? ? true : opts[:cookie]
+          status = opts[:status].nil? ? true : opts[:status]
+          xfbml = opts[:xfbml].nil?   ? true : opts[:xfbml]
           channel_url = opts[:channel_url]
+          lang = opts[:locale] || 'en_US'
           extra_js = capture(&proc) if block_given?
           js = <<-JAVASCRIPT
+          <div id="fb-root"></div>
           <script>
             window.fbAsyncInit = function() {
               FB.init({
@@ -32,13 +34,9 @@ module Facebooker2
             };
 
             (function() {
-              var s = document.createElement('div'); 
-              s.setAttribute('id','fb-root'); 
-              document.documentElement.getElementsByTagName("body")[0].appendChild(s);
-              var e = document.createElement('script');
-              e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-              e.async = true;
-              s.appendChild(e);
+              var e = document.createElement('script'); e.async = true;
+              e.src = document.location.protocol + '//connect.facebook.net/#{lang}/all.js';
+              document.getElementById('fb-root').appendChild(e);
             }());
           </script>
           JAVASCRIPT
