@@ -87,6 +87,10 @@ module Facebooker2
         return "fbs_#{Facebooker2.app_id}"
       end
       
+      def fb_site_domain
+        (fb_cookie_hash && fb_cookie_hash.has_key?("base_domain")) ? fb_cookie_hash["base_domain"] : nil
+      end
+      
       # check if the expected signature matches the one from facebook
       def fb_cookie_signature_correct?(hash,secret)
         generate_signature(hash,secret) == hash["sig"]
@@ -191,8 +195,10 @@ module Facebooker2
           return;
         end
         
-        #My browser doesn't seem to save the cookie if I set expires
-        cookies[fb_cookie_name] = { :value=>value }#, :expires=>expires}
+        #My browser doesn't seem to save the cookie if I set expires.
+        # Specifying the site domain prevents from having issues when working with subdomains
+        # such as cookie kept on subdomains when logged out from top domain.
+        cookies[fb_cookie_name] = fb_site_domain ? { :value=>value, :domain=>".#{fb_site_domain}" } : { :value=>value }#, :expires=>expires}
       end
       
     
@@ -202,6 +208,10 @@ module Facebooker2
         response.headers['P3P'] = 'CP="IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT"'
       end
       
+      def delete_fb_cookie!
+        fb_site_domain ? cookies.delete(fb_cookie_name, :domain => ".#{fb_site_domain}") : cookies.delete(fb_cookie_name)
+      end
+
     end
   end
 end
