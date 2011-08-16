@@ -16,7 +16,7 @@ module Facebooker2
           cookie = opts[:cookie].nil? ? true : opts[:cookie]
           status = opts[:status].nil? ? true : opts[:status]
           xfbml = opts[:xfbml].nil?   ? true : opts[:xfbml]
-          oauth2 = opts[:oauth2].nil?   ? false : true
+          oauth2 = Facebooker2.oauth2 ? true : false
           channel_url = opts[:channel_url]
           lang = opts[:locale] || 'en_US'
           extra_js = capture(&proc) if block_given?

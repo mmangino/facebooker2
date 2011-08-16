@@ -1,6 +1,7 @@
 require "spec_helper"
 describe Facebooker2::Rails::Helpers::Javascript, :type=>:helper do
   include Facebooker2::Rails::Helpers
+  include Facebooker2
   describe "fb_connect_async_js" do
     it "loads with defaults" do
       pending
@@ -54,7 +55,8 @@ describe Facebooker2::Rails::Helpers::Javascript, :type=>:helper do
     end
 
     it "supports oauth" do
-      js = fb_connect_async_js '12345', :oauth2=> true
+      Facebooker2.oauth2=true
+      js = fb_connect_async_js '12345'
       js.include?("oauth").should be_true, js
     end
 
