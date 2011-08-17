@@ -45,6 +45,19 @@ describe Facebooker2 do
       end.should raise_error(Facebooker2::NotConfigured)
       
     end
+
+    #context "with oauth2" do
+    #  class TestHelper
+    #  end
+    #  before do
+    #    @test_helper = TestHelper.new
+    #    @test_helper.extend(Facebooker2)
+    #    @test_helper.configuration= {:oauth2=>true}
+    #  end
+    #  it "specifies the correct cookie prefix" do
+    #    @test_helper.cookie_prefix.should equal('fbsr_')
+    #  end
+    #end
   end
   
   describe "Casting to facebook_id" do

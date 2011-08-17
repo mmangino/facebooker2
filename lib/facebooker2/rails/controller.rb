@@ -92,7 +92,7 @@ module Facebooker2
       end
       
       def fb_cookie_name
-        return "#{Facebooker2.cookie_prefix + '_' + Facebooker2.app_id}"
+        return "#{Facebooker2.cookie_prefix + Facebooker2.app_id.to_s}"
       end
       
       # check if the expected signature matches the one from facebook
