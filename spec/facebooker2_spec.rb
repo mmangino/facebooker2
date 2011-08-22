@@ -1,5 +1,9 @@
 require "spec_helper"
 describe Facebooker2 do
+  after :all do
+       Facebooker2.configuration = {:app_id=>1234,:secret=>"secret", :oauth2=>false}
+      Facebooker2.cookie_prefix='fbs_'
+  end
   
   describe "Configuration" do
     it "allows setting of the api_key" do
@@ -46,18 +50,12 @@ describe Facebooker2 do
       
     end
 
-    #context "with oauth2" do
-    #  class TestHelper
-    #  end
-    #  before do
-    #    @test_helper = TestHelper.new
-    #    @test_helper.extend(Facebooker2)
-    #    @test_helper.configuration= {:oauth2=>true}
-    #  end
-    #  it "specifies the correct cookie prefix" do
-    #    @test_helper.cookie_prefix.should equal('fbsr_')
-    #  end
-    #end
+    context "with oauth2" do
+      it "specifies the correct cookie prefix" do
+        Facebooker2.configuration= {:oauth2=>true}
+        Facebooker2.cookie_prefix.should == 'fbsr_'
+      end
+    end
   end
   
   describe "Casting to facebook_id" do

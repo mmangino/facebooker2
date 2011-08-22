@@ -3,31 +3,30 @@ describe Facebooker2::Rails::Helpers::Javascript, :type=>:helper do
   include Facebooker2::Rails::Helpers
   include Facebooker2
   describe "fb_connect_async_js" do
-    it "loads with defaults" do
-      pending
-      #js = fb_connect_async_js '12345'
-      #js.should == <<-JAVASCRIPT
-      #    <div id="fb-root"></div>
-      #    <script>
-      #      window.fbAsyncInit = function() {
-      #        FB.init({
-      #          appId  : '12345',
-      #          status : true, // check login status
-      #          cookie : true, // enable cookies to allow the server to access the session
-      #
-      #          xfbml  : true  // parse XFBML
-      #        });
-      #
-      #      };
-      #
-      #      (function() {
-      #        var e = document.createElement('script'); e.async = true;
-      #        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-      #        document.getElementById('fb-root').appendChild(e);
-      #      }());
-      #    </script>
-      #JAVASCRIPT
-    end
+    #it "loads with defaults" do
+    #  js = fb_connect_async_js '12345'
+    #  js.should == <<-JAVASCRIPT
+    #      <div id="fb-root"></div>
+    #      <script>
+    #        window.fbAsyncInit = function() {
+    #          FB.init({
+    #            appId  : '12345',
+    #            status : true, // check login status
+    #            cookie : true, // enable cookies to allow the server to access the session
+    #
+    #            xfbml  : true  // parse XFBML
+    #          });
+    #
+    #        };
+    #
+    #        (function() {
+    #          var e = document.createElement('script'); e.async = true;
+    #          e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+    #          document.getElementById('fb-root').appendChild(e);
+    #        }());
+    #      </script>
+    #  JAVASCRIPT
+    #end
     
     it "disables cookies" do
       js = fb_connect_async_js '12345', :cookie => false

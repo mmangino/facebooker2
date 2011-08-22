@@ -218,15 +218,14 @@ module Facebooker2
 
       def oauth2_fetch_client_and_user
         return if @_fb_user_fetched
-        # Try to authenticate from the signed request first
-        sig = oauth2_fetch_client_and_user_from_cookie if @_current_facebook_client.nil? and !signed_request_from_logged_out_user?
+        sig = oauth2_fetch_client_and_user_from_cookie if @_current_facebook_client.nil?
         @_fb_user_fetched = true
       end
 
       def oauth2_fetch_client_and_user_from_cookie
         return unless fb_cookie?
-        return unless oauth2_fb_cookie_signature_correct?(fb_cookie)
         sig,payload = fb_cookie.split('.')
+        return unless oauth2_fb_cookie_signature_correct?(sig, payload)
         data = JSON.parse(oauth2_base64_url_decode(payload))
         authenticator = Mogli::Authenticator.new(Facebooker2.app_id, Facebooker2.secret, nil)
         client = Mogli::Client.create_from_code_and_authenticator(data["code"], authenticator)
@@ -234,21 +233,19 @@ module Facebooker2
         fb_sign_in_user_and_client(user, client)
       end
 
-      def oauth2_fb_cookie_signature_correct?(cookie)
-        sig, payload = cookie.split('.')
+      def oauth2_fb_cookie_signature_correct?(sig, payload)
         sig = oauth2_base64_url_decode(sig)
-        ### TODO we don't know if the payload needs to be translated from base64_url to base64 as
-        # done below. I took this code from our signed request stuff ... and modified it to
-        ## look like the PHP implementation
-        # https://developers.facebook.com/docs/authentication/signed_request/
-        expected_signature = OpenSSL::HMAC.digest('SHA256', Facebooker2.secret, payload)
+        ## From the PHP implementation
+        ## https://developers.facebook.com/docs/authentication/signed_request/
+
+        expected_signature = HMAC::SHA256.digest(Facebooker2.secret, payload)
         return sig == expected_signature
       end
 
       # Stolen from mini_fb.
       # Ruby's implementation of base64 decoding reads the string in multiples of 6 and ignores any extra bytes.
       # Since facebook does not take this into account, this function fills any string with white spaces up to
-      # the point where it becomes divisible by 6, then it replaces '-' with '+' and '_' with '/' (URL-safe decoding),
+      # the point where it becomes divisible by 6, then it replaces '-' with '+' and '_' with '/' ( reverting the URL-safe encoding),
       # and decodes the result.
       def oauth2_base64_url_decode(str)
         str = str + "=" * (6 - str.size % 6) unless str.size % 6 == 0

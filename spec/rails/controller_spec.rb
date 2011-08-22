@@ -5,11 +5,17 @@ class FakeController < ActionController::Base
 end
 
 describe Facebooker2::Rails::Controller do
+  after(:all) do
+    Facebooker2.app_id = "12345"
+    Facebooker2.secret = "42ca6de519d53f6e0420247a4d108d90"
+  end
+
+  context "Without oauth2" do
   before(:each) do
     Facebooker2.app_id = "12345"
     Facebooker2.secret = "42ca6de519d53f6e0420247a4d108d90"
   end
-  
+
   let :controller do
     controller = FakeController.new
     controller.stub!(:params).and_return({})
@@ -198,6 +204,30 @@ describe Facebooker2::Rails::Controller do
       controller.current_facebook_client.should == client
     end
     
+  end
+  end
+  context "Using oauth2" do
+    let :controller do
+      controller = FakeController.new
+    end
+    it "properly decodes base64 URL encoded string missing appropriate padding" do
+      controller.oauth2_base64_url_decode('VGhpcyBpcyBlbmNvZGVkIQ').should == 'This is encoded!'
+    end
+
+    context "a valid signature" do
+      before do
+        Facebooker2.secret='secret'
+      end
+      # Example from the FB Signed Request doc : http://developers.facebook.com/docs/authentication/signed_request/
+      #vlXgu64BQGFSQrY0ZcJBZASMvYvTHu9GQ0YM9rjPSso.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsIjAiOiJwYXlsb2FkIn0
+      it "recognizes a valid signature" do
+        controller.oauth2_fb_cookie_signature_correct?('vlXgu64BQGFSQrY0ZcJBZASMvYvTHu9GQ0YM9rjPSso','eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsIjAiOiJwYXlsb2FkIn0').should be_true
+      end
+      it "rejects an invalid signature" do
+        controller.oauth2_fb_cookie_signature_correct?('QGFSQrY0ZcJBZASMvYvTHu9GQ0YM9rjPSso','eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsIjAiOiJwYXlsb2FkIn0').should be_false
+      end
+
+    end
   end
   
 end
