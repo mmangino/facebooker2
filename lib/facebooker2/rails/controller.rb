@@ -36,7 +36,7 @@ module Facebooker2
         return if @_fb_user_fetched
         # Try to authenticate from the signed request first
         sig = fetch_client_and_user_from_signed_request
-        sig = fetch_client_and_user_from_cookie if @_current_facebook_client.nil? and !signed_request_from_logged_out_user?
+        sig = fetch_client_and_user_from_cookie if @_current_facebook_client.nil?
         
         #write the authentication params to a new cookie
         if !@_current_facebook_client.nil? 
@@ -226,7 +226,7 @@ module Facebooker2
         return unless fb_cookie?
         sig,payload = fb_cookie.split('.')
         return unless oauth2_fb_cookie_signature_correct?(sig, payload)
-        data = JSON.parse(oauth2_base64_url_decode(payload))
+        data = JSON.parse(fb_signed_request_json(payload))
         authenticator = Mogli::Authenticator.new(Facebooker2.app_id, Facebooker2.secret, nil)
         client = Mogli::Client.create_from_code_and_authenticator(data["code"], authenticator)
         user = Mogli::User.new(:id=>data["user_id"])
@@ -234,24 +234,12 @@ module Facebooker2
       end
 
       def oauth2_fb_cookie_signature_correct?(sig, payload)
-        sig = oauth2_base64_url_decode(sig)
         ## From the PHP implementation
         ## https://developers.facebook.com/docs/authentication/signed_request/
-
+        sig = fb_signed_request_json(sig)
         expected_signature = HMAC::SHA256.digest(Facebooker2.secret, payload)
         return sig == expected_signature
       end
-
-      # Stolen from mini_fb.
-      # Ruby's implementation of base64 decoding reads the string in multiples of 6 and ignores any extra bytes.
-      # Since facebook does not take this into account, this function fills any string with white spaces up to
-      # the point where it becomes divisible by 6, then it replaces '-' with '+' and '_' with '/' ( reverting the URL-safe encoding),
-      # and decodes the result.
-      def oauth2_base64_url_decode(str)
-        str = str + "=" * (6 - str.size % 6) unless str.size % 6 == 0
-        return Base64.decode64(str.tr("-_", "+/"))
-      end
-
     end
   end
 end

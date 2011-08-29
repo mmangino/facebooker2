@@ -206,15 +206,12 @@ describe Facebooker2::Rails::Controller do
     
   end
   end
-  context "Using oauth2" do
+  describe "Using oauth2" do
     let :controller do
       controller = FakeController.new
     end
-    it "properly decodes base64 URL encoded string missing appropriate padding" do
-      controller.oauth2_base64_url_decode('VGhpcyBpcyBlbmNvZGVkIQ').should == 'This is encoded!'
-    end
 
-    context "a valid signature" do
+    context "a FB cookie exists" do
       before do
         Facebooker2.secret='secret'
       end
