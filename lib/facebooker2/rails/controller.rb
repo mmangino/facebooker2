@@ -36,7 +36,7 @@ module Facebooker2
         return if @_fb_user_fetched
         # Try to authenticate from the signed request first
         sig = fetch_client_and_user_from_signed_request
-        sig = fetch_client_and_user_from_cookie if @_current_facebook_client.nil?
+        sig = fetch_client_and_user_from_cookie if @_current_facebook_client.nil? and !signed_request_from_logged_out_user?
         
         #write the authentication params to a new cookie
         if !@_current_facebook_client.nil? 
@@ -226,20 +226,20 @@ module Facebooker2
         return unless fb_cookie?
         sig,payload = fb_cookie.split('.')
         return unless fb_signed_request_sig_valid?(sig, payload)
-        data = JSON.parse(fb_signed_request_json(payload))
+        data = JSON.parse(base64_url_decode(payload))
         authenticator = Mogli::Authenticator.new(Facebooker2.app_id, Facebooker2.secret, nil)
         client = Mogli::Client.create_from_code_and_authenticator(data["code"], authenticator)
         user = Mogli::User.new(:id=>data["user_id"])
         fb_sign_in_user_and_client(user, client)
       end
 
-      def oauth2_fb_cookie_signature_correct?(sig, payload)
-        ## From the PHP implementation
-        ## https://developers.facebook.com/docs/authentication/signed_request/
-        sig = fb_signed_request_json(sig)
-        expected_signature = HMAC::SHA256.digest(Facebooker2.secret, payload)
-        return sig == expected_signature
+
+      def base64_url_decode(encoded)
+        chars_to_add = 4-(encoded.size % 4)
+        encoded += ("=" * chars_to_add)
+        Base64.decode64(encoded.tr("-_", "+/"))
       end
+
     end
   end
 end
