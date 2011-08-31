@@ -12,12 +12,20 @@ module Facebooker2
       end
       
       def current_facebook_user
-        fetch_client_and_user
+        if (Facebooker2.oauth2)
+          oauth2_fetch_client_and_user
+        else
+          fetch_client_and_user
+        end
         @_current_facebook_user
       end
       
       def current_facebook_client
-        fetch_client_and_user
+        if (Facebooker2.oauth2)
+          oauth2_fetch_client_and_user
+        else
+          fetch_client_and_user
+        end
         @_current_facebook_client
       end
       
@@ -84,7 +92,7 @@ module Facebooker2
       end
       
       def fb_cookie_name
-        return "fbs_#{Facebooker2.app_id}"
+        return "#{Facebooker2.cookie_prefix + Facebooker2.app_id.to_s}"
       end
       
       # check if the expected signature matches the one from facebook
@@ -201,7 +209,37 @@ module Facebooker2
       def set_p3p_header_for_third_party_cookies
         response.headers['P3P'] = 'CP="IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT"'
       end
-      
+
+      ### Oauth2
+      def oauth2_current_facebook_user
+        oauth2_fetch_client_and_user
+        @_current_facebook_user
+      end
+
+      def oauth2_fetch_client_and_user
+        return if @_fb_user_fetched
+        sig = oauth2_fetch_client_and_user_from_cookie if @_current_facebook_client.nil?
+        @_fb_user_fetched = true
+      end
+
+      def oauth2_fetch_client_and_user_from_cookie
+        return unless fb_cookie?
+        sig,payload = fb_cookie.split('.')
+        return unless fb_signed_request_sig_valid?(sig, payload)
+        data = JSON.parse(base64_url_decode(payload))
+        authenticator = Mogli::Authenticator.new(Facebooker2.app_id, Facebooker2.secret, nil)
+        client = Mogli::Client.create_from_code_and_authenticator(data["code"], authenticator)
+        user = Mogli::User.new(:id=>data["user_id"])
+        fb_sign_in_user_and_client(user, client)
+      end
+
+
+      def base64_url_decode(encoded)
+        chars_to_add = 4-(encoded.size % 4)
+        encoded += ("=" * chars_to_add)
+        Base64.decode64(encoded.tr("-_", "+/"))
+      end
+
     end
   end
 end
