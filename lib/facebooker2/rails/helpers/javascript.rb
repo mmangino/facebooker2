@@ -16,6 +16,7 @@ module Facebooker2
           cookie = opts[:cookie].nil? ? true : opts[:cookie]
           status = opts[:status].nil? ? true : opts[:status]
           xfbml = opts[:xfbml].nil?   ? true : opts[:xfbml]
+          oauth2 = Facebooker2.oauth2 ? true : false
           channel_url = opts[:channel_url]
           lang = opts[:locale] || 'en_US'
           extra_js = capture(&proc) if block_given?
@@ -28,6 +29,7 @@ module Facebooker2
                 status : #{status}, // check login status
                 cookie : #{cookie}, // enable cookies to allow the server to access the session
                 #{"channelUrl : '#{channel_url}', // add channelURL to avoid IE redirect problems" unless channel_url.blank?}
+                #{"oauth : true,"  if oauth2}
                 xfbml  : #{xfbml}  // parse XFBML
               });
               #{extra_js}

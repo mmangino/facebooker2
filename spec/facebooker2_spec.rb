@@ -1,5 +1,9 @@
 require "spec_helper"
 describe Facebooker2 do
+  after :all do
+       Facebooker2.configuration = {:app_id=>1234,:secret=>"secret", :oauth2=>false}
+      Facebooker2.cookie_prefix='fbs_'
+  end
   
   describe "Configuration" do
     it "allows setting of the api_key" do
@@ -44,6 +48,13 @@ describe Facebooker2 do
         Facebooker2.load_facebooker_yaml
       end.should raise_error(Facebooker2::NotConfigured)
       
+    end
+
+    context "with oauth2" do
+      it "specifies the correct cookie prefix" do
+        Facebooker2.configuration= {:oauth2=>true}
+        Facebooker2.cookie_prefix.should == 'fbsr_'
+      end
     end
   end
   
