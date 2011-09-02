@@ -17,10 +17,15 @@ module Facebooker2
         #   => <fb:login-button onlogin="window.location.href = &quot;/other_page&quot;;" v="2">Login with Facebook</fb:login-button>
         #
         def fb_login_and_redirect(url, options = {})
-          js = update_page do |page|
-            page.redirect_to url
+          # Check if we got the update_page method (pre-Rails 3.1)
+          if respond_to? 'update_page'
+            js = update_page do |page|
+              page.redirect_to url
+            end
+          # Else use plain js
+          else
+            js = "window.location.href = '#{url}'"
           end
-
           text = options.delete(:text)
           
           #rails 3 only escapes non-html_safe strings, so get the raw string instead of the SafeBuffer
