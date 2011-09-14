@@ -2,7 +2,7 @@ module Facebooker2
   module Rails
     module Helpers
       module Javascript
-        
+
         def fb_html_safe(str)
           if str.respond_to?(:html_safe)
             str.html_safe
@@ -10,12 +10,13 @@ module Facebooker2
             str
           end
         end
-        
+
         def fb_connect_async_js(app_id=Facebooker2.app_id,options={},&proc)
           opts = Hash.new.merge!(options)
           cookie = opts[:cookie].nil? ? true : opts[:cookie]
           status = opts[:status].nil? ? true : opts[:status]
           xfbml = opts[:xfbml].nil?   ? true : opts[:xfbml]
+          oauth = opts[:oauth].nil?   ? true : opts[:oauth]
           channel_url = opts[:channel_url]
           lang = opts[:locale] || 'en_US'
           extra_js = capture(&proc) if block_given?
@@ -27,6 +28,7 @@ module Facebooker2
                 appId  : '#{app_id}',
                 status : #{status}, // check login status
                 cookie : #{cookie}, // enable cookies to allow the server to access the session
+                oauth  : #{oauth}, // enable OAuth 2.0 support
                 #{"channelUrl : '#{channel_url}', // add channelURL to avoid IE redirect problems" unless channel_url.blank?}
                 xfbml  : #{xfbml}  // parse XFBML
               });
@@ -41,11 +43,11 @@ module Facebooker2
           </script>
           JAVASCRIPT
           escaped_js = fb_html_safe(js)
-          if block_given? 
+          if block_given?
            concat(escaped_js)
            #return the empty string, since concat returns the buffer and we don't want double output
            # from klochner
-           "" 
+           ""
           else
            escaped_js
           end
