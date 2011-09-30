@@ -2,7 +2,7 @@
 require "mogli"
 module Facebooker2
 
-  @oauth2 = false
+  @oauth2 = true
   @cookie_prefix = 'fbs_'
 
   class NotConfigured < Exception; end
