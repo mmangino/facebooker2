@@ -84,7 +84,7 @@ module Facebooker2
       end
       
       def fb_cookie?
-        !fb_cookie.nil?
+        !fb_cookie.blank?
       end
       
       def fb_cookie

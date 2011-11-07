@@ -41,6 +41,20 @@ describe Facebooker2::Rails::Controller do
         controller.fb_cookie?.should be_false
       end
 
+      it "knows when there is a nil cookie value" do
+        controller.stub!(:cookies).and_return({
+          controller.fb_cookie_name => nil
+        })
+        controller.fb_cookie?.should be_false
+      end
+
+      it "knows when there is a blank cookie value" do
+        controller.stub!(:cookies).and_return({
+          controller.fb_cookie_name => ''
+        })
+        controller.fb_cookie?.should be_false
+      end
+
       it "gets the hash from the cookie" do
         controller.stub!(:cookies).and_return("fbs_12345"=>"param1=val1&param2=val2")
         controller.fb_cookie_hash.should == {"param1"=>"val1", "param2"=>"val2"}
