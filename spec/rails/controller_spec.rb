@@ -55,67 +55,13 @@ describe Facebooker2::Rails::Controller do
         controller.fb_cookie?.should be_false
       end
 
-      it "gets the hash from the cookie" do
-        controller.stub!(:cookies).and_return("fbs_12345"=>"param1=val1&param2=val2")
-        controller.fb_cookie_hash.should == {"param1"=>"val1", "param2"=>"val2"}
-      end
-
-      it "creates a user from the cookie" do
-        controller.current_facebook_user.should_not be_nil
-        controller.current_facebook_user.should be_an_instance_of(Mogli::User)
-        controller.current_facebook_user.id.should == "12451752"
-      end
-
-      it "sets the client for the user" do
-        controller.current_facebook_user.client.access_token.should == "114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA."
-      end
 
       it "doesn't create a user if there is no app cookie" do
         Facebooker2.app_id="other_app"
         controller.current_facebook_user.should be_nil
       end
 
-      it "creates a client from the cookie" do
-        controller.current_facebook_client.should_not be_nil
-        controller.current_facebook_client.should be_an_instance_of(Mogli::Client)
-        controller.current_facebook_client.access_token.should == "114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA."
-      end
 
-      it "creates a client from params" do
-        controller.stub!(:fb_cookie_hash).and_return({})
-        controller.stub!(:cookies).and_return({})
-        controller.stub!(:facebook_params).and_return(
-          :oauth_token => "103188716396725|2.N0kBq5D0cbwjTGm9J4xRgA__.3600.1279814400-585612657|Txwy8S7sWBIJnyAXebEgSx6ntgY.",
-          :expires=>"1279814400",
-          :user_id => "585612657")
-        controller.current_facebook_client.access_token.should == "103188716396725|2.N0kBq5D0cbwjTGm9J4xRgA__.3600.1279814400-585612657|Txwy8S7sWBIJnyAXebEgSx6ntgY."
-        controller.current_facebook_user.id.should == "585612657"
-      end
-
-      it "verifies that the signature is correct" do
-        controller.fb_cookie_signature_correct?({
-          "access_token"      =>  "114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.",
-          "expires"           =>  "0",
-          "secret"            =>  "1e3375dcc4527e7ead0f82c095421690",
-          "session_key"       =>  "57f0206b01ad48bf84ac86f1-12451752",
-          "uid"               =>  "12451752",
-          "sig"               =>  "4337fcdee4cc68bb70ec495c0eebf89c"},
-          "42ca6de519d53f6e0420247a4d108d90"
-          ).should be_true
-      end
-
-      it "returns false if the signature is not correct" do
-        controller.fb_cookie_signature_correct?({
-          "access_token"      =>  "114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.",
-          "expires"           =>  "0",
-          "secret"            =>  "1e3375dcc4527e7ead0f82c095421690",
-          "session_key"       =>  "57f0206b01ad48bf84ac86f1-12451752",
-          "uid"               =>  "5436785463785",
-          "sig"               =>  "4337fcdee4cc68bb70ec495c0eebf89c"},
-          "42ca6de519d53f6e0420247a4d108d90"
-          ).should be_false
-
-      end
 
       it "does not set a cookie if it is not required" do
         controller.stub!(:cookies).and_return("")
