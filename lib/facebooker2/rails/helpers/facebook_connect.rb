@@ -46,10 +46,13 @@ module Facebooker2
           link_to_function text, function.to_str, *args
         end
         
-        def fb_server_fbml(style=nil,&proc)
+        def fb_server_fbml(style=nil, width=nil, &proc)
           style_string=" style=\"#{style}\"" if style
+          width_string=" width=\"#{width}\"" if width
           content = capture(&proc)
-          concat("<fb:serverFbml#{style_string}><script type='text/fbml'>#{content}</script></fb:serverFbml>")
+          output = "<fb:serverFbml#{style_string}#{width_string}><script type='text/fbml'><fb:fbml>#{content}</fb:fbml></script></fb:serverFbml>"
+          output = output.respond_to?(:html_safe) ? output.html_safe : output
+          concat(output)
         end
       end
     end
