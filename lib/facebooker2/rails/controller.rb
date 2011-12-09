@@ -53,7 +53,7 @@ module Facebooker2
       
       def fetch_client_and_user_from_cookie
         if (hash_data = fb_cookie_hash) and
-          fb_cookie_signature_correct?(fb_cookie_hash,Facebooker2.secret)
+          fb_cookie_signature_correct?(fb_cookie_hash,fb_secret)
           fb_create_user_and_client(hash_data["access_token"],hash_data["expires"],hash_data["uid"])
           return fb_cookie_hash["sig"]
         end
@@ -92,7 +92,19 @@ module Facebooker2
       end
       
       def fb_cookie_name
-        return "#{Facebooker2.cookie_prefix + Facebooker2.app_id.to_s}"
+        return "#{Facebooker2.cookie_prefix + fb_app_id.to_s}"
+      end
+      
+      def fb_app_id
+        Facebooker2.app_id
+      end
+      
+      def fb_secret
+        Facebooker2.secret
+      end
+      
+      def fb_api_key
+        Facebooker2.api_key
       end
       
       # check if the expected signature matches the one from facebook
@@ -136,7 +148,7 @@ module Facebooker2
       end  
       
       def fb_signed_request_sig_valid?(sig,encoded) 
-        base64 = Base64.encode64(HMAC::SHA256.digest(Facebooker2.secret,encoded))
+        base64 = Base64.encode64(HMAC::SHA256.digest(fb_secret,encoded))
         #now make the url changes that facebook makes
         url_escaped_base64 = base64.gsub(/=*\n?$/,"").tr("+/","-_")
         sig ==  url_escaped_base64
@@ -149,7 +161,7 @@ module Facebooker2
           if @_current_facebook_client
             #compute a signature so we can store it in the cookie
             sig_hash = Hash["uid"=>facebook_params[:user_id],"access_token"=>facebook_params[:oauth_token],"expires"=>facebook_params[:expires]]
-            return generate_signature(sig_hash, Facebooker2.secret)
+            return generate_signature(sig_hash, fb_secret)
           end
         end
       end
@@ -227,7 +239,7 @@ module Facebooker2
         sig,payload = fb_cookie.split('.')
         return unless fb_signed_request_sig_valid?(sig, payload)
         data = JSON.parse(base64_url_decode(payload))
-        authenticator = Mogli::Authenticator.new(Facebooker2.app_id, Facebooker2.secret, nil)
+        authenticator = Mogli::Authenticator.new(fb_app_id, fb_secret, nil)
         client = Mogli::Client.create_from_code_and_authenticator(data["code"], authenticator)
         user = Mogli::User.new(:id=>data["user_id"])
         fb_sign_in_user_and_client(user, client)
