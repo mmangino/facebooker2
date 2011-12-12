@@ -45,7 +45,7 @@ shared login partial.
        # here we instruct facebook to ask the user for permission for our website
        # to access the user's facebook email and birthday
        %>
-      <%= fb_login_and_redirect('<your URL here>', :perms => 'email,user_birthday') %>
+      <%= fb_login_and_redirect('<your URL here>', :scope => 'email,user_birthday') %>
     <% end %>
 
 Facebook canvas applications

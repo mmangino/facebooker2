@@ -27,7 +27,6 @@ module Facebooker2
     self.secret = hash[:secret]
     self.app_id = hash[:app_id]
     self.cookie_prefix = 'fbsr_' unless hash[:oauth2].blank?
-    self.oauth2 = hash[:oauth2].blank? ? false : true
   end
   
   def self.load_facebooker_yaml
