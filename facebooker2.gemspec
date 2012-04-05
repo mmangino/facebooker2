@@ -18,4 +18,5 @@ spec = Gem::Specification.new do |s|
   s.add_development_dependency('rspec-rails', '~> 1.3.1')
   s.add_development_dependency('rails', '~> 2.3.10')
   s.add_development_dependency('json', '~> 1.4.0')
+  s.add_development_dependency('test-unit', '1.2.3')
 end
