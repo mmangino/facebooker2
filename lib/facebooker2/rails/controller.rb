@@ -121,7 +121,7 @@ module Facebooker2
       def fb_signed_request_json(encoded)
         chars_to_add = 4-(encoded.size % 4)
         encoded += ("=" * chars_to_add)
-        Base64.decode64(encoded)
+        base64_url_decode(encoded)
       end
       
       def facebook_params
