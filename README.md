@@ -39,7 +39,7 @@ shared login partial.
     <% current_facebook_user.fetch %>
       <%= "Welcome #{current_facebook_user.first_name} #{current_facebook_user.last_name}!" %>
       or 
-      <%= "Hello #{fb_name(current_facebook_user, :useyou => false)}!" # link to facebook profile %>
+      Welcome <%= fb_name(current_facebook_user, :useyou => false) %>!
       <%= fb_logout_link("Logout of fb", request.url) %><br />
     <% else
        # you must explicitly request permissions for facebook user fields.
