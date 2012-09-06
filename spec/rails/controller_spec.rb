@@ -114,6 +114,11 @@ describe Facebooker2::Rails::Controller do
           should == "{\"algorithm\":\"HMAC-SHA256\",\"expires\":1279814400,\"oauth_token\":\"103188716396725|2.N0kBq5D0cbwjTGm9J4xRgA__.3600.1279814400-585612657|Txwy8S7sWBIJnyAXebEgSx6ntgY.\",\"user_id\":\"585612657\"}"
       end
 
+      it "should properly decode as url" do
+        controller.fb_signed_request_json("eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImFwcF9kYXRhIjp7InJlZGlyZWN0IjoiXC9hcHBcL2Nhc2luby1iYWRlbi1mb3RvY29udGVzdFwvcGFnZXNcLzM_c3VibWlzc2lvbj0xdEJJMnowaUlIIn0sImlzc3VlZF9hdCI6MTM0Njc5MjM0MSwicGFnZSI6eyJpZCI6IjEwMjYwODMxOTgxODU4NiIsImxpa2VkIjpmYWxzZSwiYWRtaW4iOmZhbHNlfSwidXNlciI6eyJjb3VudHJ5IjoiYXQiLCJsb2NhbGUiOiJkZV9ERSIsImFnZSI6eyJtaW4iOjIxfX19").should ==
+          '{"algorithm":"HMAC-SHA256","app_data":{"redirect":"\/app\/casino-baden-fotocontest\/pages\/3?submission=1tBI2z0iIH"},"issued_at":1346792341,"page":{"id":"102608319818586","liked":false,"admin":false},"user":{"country":"at","locale":"de_DE","age":{"min":21}}}'
+      end
+
       it "provides facebook_params if the sig is valid" do
         Facebooker2.secret = "mysecretkey"
         controller.stub!(:params).and_return(:signed_request=>"N1JJFILX63MufS1zpHZwN109VK1ggzEsD0N4pH-yPtc.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEyNzk4MjE2MDAsIm9hdXRoX3Rva2VuIjoiMTAzMTg4NzE2Mzk2NzI1fDIucnJRSktyRzFRYXpGYTFoa2Z6MWpMZ19fLjM2MDAuMTI3OTgyMTYwMC01MzI4Mjg4Njh8TWF4QVdxTWtVS3lKbEFwOVgwZldGWEF0M004LiIsInVzZXJfaWQiOiI1MzI4Mjg4NjgifQ")
