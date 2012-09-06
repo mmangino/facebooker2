@@ -5,6 +5,16 @@ class FakeController < ActionController::Base
 end
 
 describe Facebooker2::Rails::Controller do
+
+
+  def compare_cookie_values(actual,expected)
+    pairify_cookie(actual).should == pairify_cookie(expected)
+  end
+
+  def pairify_cookie(value)   
+    value.gsub('"',"").split("&").sort
+  end
+
   # This spec has side effects. The configuration
   # needs to be rebuilt for the following tests to pass.
   after(:all) do
@@ -78,7 +88,7 @@ describe Facebooker2::Rails::Controller do
                                  tn,
                                  "5436785463785",
                                  "4337fcdee4cc68bb70ec495c0eebf89c").should be_true
-       controller.fb_cookie[:value].should == "\"session_key=57f0206b01ad48bf84ac86f1-12451752&expires=#{tn.to_i}&uid=5436785463785&sig=4337fcdee4cc68bb70ec495c0eebf89c&secret=1e3375dcc4527e7ead0f82c095421690&access_token=114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.\""
+       compare_cookie_values(controller.fb_cookie[:value], "\"session_key=57f0206b01ad48bf84ac86f1-12451752&expires=#{tn.to_i}&uid=5436785463785&sig=4337fcdee4cc68bb70ec495c0eebf89c&secret=1e3375dcc4527e7ead0f82c095421690&access_token=114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.\"")
       end
 
       it "sets a cookie with an expires value of 0 if the access token expires value is far in the future" do
@@ -86,7 +96,7 @@ describe Facebooker2::Rails::Controller do
                                  Time.now+2.year,
                                  "5436785463785",
                                  "4337fcdee4cc68bb70ec495c0eebf89c").should be_true
-       controller.fb_cookie[:value].should == "\"session_key=57f0206b01ad48bf84ac86f1-12451752&expires=0&uid=5436785463785&sig=4337fcdee4cc68bb70ec495c0eebf89c&secret=1e3375dcc4527e7ead0f82c095421690&access_token=114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.\""
+       compare_cookie_values(controller.fb_cookie[:value], "\"session_key=57f0206b01ad48bf84ac86f1-12451752&expires=0&uid=5436785463785&sig=4337fcdee4cc68bb70ec495c0eebf89c&secret=1e3375dcc4527e7ead0f82c095421690&access_token=114355055262088|57f0206b01ad48bf84ac86f1-12451752|63WyZjRQbzowpN8ibdIfrsg80OA.\"")
       end
 
      it "sets a cookie with the value deleted if the access token is nil" do
@@ -126,12 +136,12 @@ describe Facebooker2::Rails::Controller do
                                             "expires"=>controller.facebook_params[:expires]},
                                            Facebooker2.secret)
 
-        controller.fb_cookie[:value].should == "\"session_key=57f0206b01ad48bf84ac86f1-12451752&"+
+        compare_cookie_values(controller.fb_cookie[:value], "\"session_key=57f0206b01ad48bf84ac86f1-12451752&"+
                                                "expires=1279821600&"+
                                                "uid=532828868&"+
                                                "sig=0d82b1bb944e5bf8e753a71ee72e9e23&"+
                                                "secret=1e3375dcc4527e7ead0f82c095421690&"+
-                                               "access_token=103188716396725|2.rrQJKrG1QazFa1hkfz1jLg__.3600.1279821600-532828868|MaxAWqMkUKyJlAp9X0fWFXAt3M8.\""
+                                               "access_token=103188716396725|2.rrQJKrG1QazFa1hkfz1jLg__.3600.1279821600-532828868|MaxAWqMkUKyJlAp9X0fWFXAt3M8.\"")
 
       end
 

@@ -53,7 +53,7 @@ describe Facebooker2 do
     context "with oauth2" do
       it "specifies the correct cookie prefix" do
         Facebooker2.configuration= {:oauth2=>true}
-        Facebooker2.cookie_prefix.should == 'fbsr_'
+        Facebooker2.cookie_prefix.should == 'fbs_'
       end
     end
   end
