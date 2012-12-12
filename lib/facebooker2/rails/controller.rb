@@ -244,6 +244,12 @@ module Facebooker2
         end
       end
 
+      def fb_logout!
+        session[:facebooker2_access_token]=nil
+        session[:facebooker2_expiration]=nil
+        session[:facebooker2_user_id]=nil
+      end
+
 
       def base64_url_decode(encoded)
         chars_to_add = 4-(encoded.size % 4)
