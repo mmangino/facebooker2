@@ -239,7 +239,7 @@ module Facebooker2
       def oauth2_fetch_client_and_user_from_session
         if session[:facebooker2_access_token]
           client = Mogli::Client.new(session[:facebooker2_access_token],session[:facebooker2_expiration])
-          user = Moglie::User.new(:id=>session[:facebooker2_user_id])
+          user = Mogli::User.new(:id=>session[:facebooker2_user_id])
           sign_in_user_and_client(user, client)
         end
       end
