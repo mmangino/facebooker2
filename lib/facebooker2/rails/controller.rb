@@ -211,14 +211,10 @@ module Facebooker2
       end
 
       ### Oauth2
-      def oauth2_current_facebook_user
-        oauth2_fetch_client_and_user
-        @_current_facebook_user
-      end
 
       def oauth2_fetch_client_and_user
         return if @_fb_user_fetched
-        sig = oauth2_fetch_client_and_user_from_cookie if @_current_facebook_client.nil?
+        oauth2_fetch_client_and_user_from_session || oauth2_fetch_client_and_user_from_cookie
         @_fb_user_fetched = true
       end
 
@@ -230,7 +226,22 @@ module Facebooker2
         authenticator = Mogli::Authenticator.new(Facebooker2.app_id, Facebooker2.secret, '')
         client = Mogli::Client.create_from_code_and_authenticator(data["code"], authenticator)
         user = Mogli::User.new(:id=>data["user_id"])
+        oauth2_store_client_and_user_in_session(client,user)
         fb_sign_in_user_and_client(user, client)
+      end
+
+      def oauth2_store_client_and_user_in_session(client, user)
+        session[:facebooker2_access_token] = client.access_token
+        session[:facebooker2_expiration] = client.expiration
+        session[:facebooker2_user_id] = user.id
+      end
+
+      def oauth2_fetch_client_and_user_from_session
+        if session[:facebooker2_access_token]
+          client = Mogli::Client.new(session[:facebooker2_access_token],session[:facebooker2_expiration])
+          user = Moglie::User.new(:id=>session[:facebooker2_user_id])
+          sign_in_user_and_client(user, client)
+        end
       end
 
 

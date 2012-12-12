@@ -26,6 +26,7 @@ describe Facebooker2::Rails::Controller do
     before(:each) do
       Facebooker2.app_id = "12345"
       Facebooker2.secret = "42ca6de519d53f6e0420247a4d108d90"
+      Facebooker2.oauth2 = false
       Facebooker2.stub(:cookie_prefix).and_return("fbs_")
     end
 
