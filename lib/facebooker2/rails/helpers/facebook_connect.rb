@@ -24,7 +24,7 @@ module Facebooker2
             end
           # Else use plain js
           else
-            js = "window.location.href = '#{url}'"
+            js = "window.location.href = '#{url}';"
           end
           text = options.delete(:text)
           

@@ -1,40 +1,26 @@
-require "rubygems"
-
-begin
-  require 'bundler'
-  begin
-    Bundler.setup(:default, :development)
-  rescue Bundler::BundlerError => e
-    $stderr.puts e.message
-    $stderr.puts "Run `bundle install` to install missing gems"
-    exit e.status_code
-  end
-rescue LoadError
-  # Not using bundler
-end
-
-require "active_support"
-require "action_pack"
-require "action_view"
-require "action_controller"
-require 'action_controller/test_process'
-require 'action_controller/integration'
-require 'active_support/test_case'
-require 'spec/test/unit'
-
-
+require 'rubygems'
+# This file is copied to spec/ when you run 'rails generate rspec:install'
+ENV["RAILS_ENV"] ||= 'test'
+#require File.expand_path("../../config/environment", __FILE__)
+require "rails/all"
+require "erubis"
+require 'rspec/rails'
+require 'rspec/autorun'
 require "facebooker2"
-gem "rspec-rails"
+# Requires supporting ruby files with custom matchers and macros, etc,
+# in spec/support/ and its subdirectories.
+RSpec.configure do |config|
 
-#required because view tests need a controller
-class ApplicationController < ActionController::Base
+  # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
+  config.fixture_path = "#{::Rails.root}/spec/fixtures"
+
+  # If you're not using ActiveRecord, or you'd prefer not to run each of your
+  # examples within a transaction, remove the following line or assign false
+  # instead of true.
+  config.use_transactional_fixtures = true
+
+  # If true, the base class of anonymous controllers will be inferred
+  # automatically. This will be the default behavior in future versions of
+  # rspec-rails.
+  config.infer_base_class_for_anonymous_controllers = true
 end
-
-#load just the files needed for helper tests so that we don't need a full rails stack
-require "spec/rails/example/functional_example_group"
-require "spec/rails/example/helper_example_group"
-require 'spec/rails/interop/testcase'
-
-Spec::Example::ExampleGroupFactory.default(ActiveSupport::TestCase)
-
-
