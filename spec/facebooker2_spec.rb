@@ -1,7 +1,7 @@
 require "spec_helper"
 describe Facebooker2 do
   after :all do
-       Facebooker2.configuration = {:app_id=>1234,:secret=>"secret", :oauth2=>true}
+       Facebooker2.configuration = {:app_id=>1234,:secret=>"secret", :oauth2=>false}
   end
   
   describe "Configuration" do
