@@ -240,7 +240,7 @@ module Facebooker2
         if session[:facebooker2_access_token]
           client = Mogli::Client.new(session[:facebooker2_access_token],session[:facebooker2_expiration])
           user = Mogli::User.new(:id=>session[:facebooker2_user_id])
-          sign_in_user_and_client(user, client)
+          fb_sign_in_user_and_client(user, client)
         end
       end
 
