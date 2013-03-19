@@ -16,6 +16,7 @@ module Facebooker2
           cookie = opts[:cookie].nil? ? true : opts[:cookie]
           status = opts[:status].nil? ? true : opts[:status]
           xfbml = opts[:xfbml].nil?   ? true : opts[:xfbml]
+          music = opts[:music].nil?   ? false : opts[:music]
           channel_url = opts[:channel_url]
           lang = opts[:locale] || 'en_US'
           extra_js = capture(&proc) if block_given?
@@ -29,6 +30,7 @@ module Facebooker2
                 cookie : #{cookie}, // enable cookies to allow the server to access the session
                 #{"channelUrl : '#{channel_url}', // add channelURL to avoid IE redirect problems" unless channel_url.blank?}
                 oauth : true,
+                music : #{music}
                 xfbml  : #{xfbml}  // parse XFBML
               });
               #{extra_js}
