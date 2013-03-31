@@ -58,6 +58,13 @@ describe Facebooker2::Rails::Helpers::Javascript, :type=>:helper do
       js = fb_connect_async_js '12345'
       js.include?("oauth").should be_true, js
     end
+    
+    # to include support for frictionless app requests https://developers.facebook.com/blog/post/569/
+    it "enables frictionless requests" do
+      js = fb_connect_async_js '12345', :frictionless_requests => true
+      js.include?("frictionlessRequests : true").should be_true, js
+    end
+    
 
     # Can't get this to work!
     # it "adds extra js" do
