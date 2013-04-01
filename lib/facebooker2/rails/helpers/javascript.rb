@@ -29,6 +29,7 @@ module Facebooker2
                 status : #{status}, // check login status
                 cookie : #{cookie}, // enable cookies to allow the server to access the session
                 #{"channelUrl : '#{channel_url}', // add channelURL to avoid IE redirect problems" unless channel_url.blank?}
+                #{"frictionlessRequests : true," if options[:frictionless_requests]}
                 oauth : true,
                 music : #{music}, //turn on music for OG
                 xfbml  : #{xfbml}  // parse XFBML
