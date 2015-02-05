@@ -27,30 +27,30 @@ describe Facebooker2::Rails::Helpers::Javascript, :type=>:helper do
     #      </script>
     #  JAVASCRIPT
     #end
-    
+
     it "disables cookies" do
       js = fb_connect_async_js '12345', :cookie => false
       js.include?("cookie : false").should be_true, js
     end
-    
+
     it "disables checking login status" do
       js = fb_connect_async_js '12345', :status => false
       js.include?("status : false").should be_true, js
     end
-    
+
     it "disables xfbml parsing" do
       js = fb_connect_async_js '12345', :xfbml => false
       js.include?("xfbml  : false").should be_true, js
     end
-    
+
     it "adds a channel url" do
       js = fb_connect_async_js '12345', :channel_url => 'http://channel.url'
       js.include?("channelUrl : 'http://channel.url'").should be_true, js
     end
-    
+
     it "changes the default locale" do
       js = fb_connect_async_js '12345', :locale => 'fr_FR'
-      js.include?("//connect.facebook.net/fr_FR/all.js").should be_true, js
+      js.include?("//connect.facebook.net/fr_FR/sdk.js").should be_true, js
     end
 
     it "supports oauth" do
@@ -58,13 +58,17 @@ describe Facebooker2::Rails::Helpers::Javascript, :type=>:helper do
       js = fb_connect_async_js '12345'
       js.include?("oauth").should be_true, js
     end
-    
+
     # to include support for frictionless app requests https://developers.facebook.com/blog/post/569/
     it "enables frictionless requests" do
       js = fb_connect_async_js '12345', :frictionless_requests => true
       js.include?("frictionlessRequests : true").should be_true, js
     end
-    
+
+    it "sets api version" do
+      js = fb_connect_async_js '12345', :version => 'v2.2'
+      js.include?("version: 'v2.2'").should be_true, js
+    end
 
     # Can't get this to work!
     # it "adds extra js" do
@@ -74,6 +78,6 @@ describe Facebooker2::Rails::Helpers::Javascript, :type=>:helper do
     #   end
     #   helper.output_buffer.include?("FB.Canvas.setAutoResize();").should be_true, helper.output_buffer
     # end
-    
+
   end
 end
