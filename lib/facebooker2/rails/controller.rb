@@ -28,6 +28,14 @@ module Facebooker2
         end
         @_current_facebook_client
       end
+  
+      def logged_in?
+        !!current_facebook_user
+      end
+  
+      def facebook_user_agent?
+        request.env["HTTP_USER_AGENT"] && request.env["HTTP_USER_AGENT"].start_with?('facebookexternalhit')
+      end
       
       # This mimics the getSession logic from the php facebook SDK
       # https://github.com/facebook/php-sdk/blob/master/src/facebook.php#L333
